@@ -1,0 +1,94 @@
+/*Service for the Complete License Plate detection*/
+SHARED LicenseService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
+    STRING GETLICENSEPLATE(VARSTRING s) : cpp,entrypoint='licenseplate';
+END;
+
+/*Service for training KNN set*/
+SHARED KNNService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
+    BOOLEAN loadKNNDataAndTrainKNN() : cpp,entrypoint='loadKNNDataAndTrainKNN2';
+END;
+
+/*Service for Feature Matching*/
+SHARED FeatureService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
+    STRING MATCH_FEATURES(VARSTRING s1,VARSTRING s2) : cpp,entrypoint='feature_match';
+END;
+
+/*Service for Edge Detection*/
+SHARED EdgeService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
+    INTEGER DETECT_EDGE(VARSTRING s) : cpp,entrypoint='edge_detect';
+END;
+
+/*Service for OpenCVHandlers*/
+SHARED OpenCVService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
+    INTEGER GETBLUR(VARSTRING s) : cpp,entrypoint='gaussblur';
+    INTEGER GRAYSCALE(VARSTRING s) : cpp,entrypoint='grayscale';
+    INTEGER THRESH_HOLD(VARSTRING s,REAL threshval,REAL maxval=255,INTEGER type_1=0) : cpp,entrypoint='threshold_img';
+    INTEGER RESIZE(VARSTRING s, REAL fx, REAL fy) : cpp,entrypoint='resize';
+    INTEGER TRANSLATE(VARSTRING s,REAL rs, REAL cs) : cpp,entrypoint='translate_img';
+    INTEGER ROTATE(VARSTRING s, REAL angle, REAL scale,REAL x, REAL y) : cpp,entrypoint='rotate_img';
+END;
+
+/*Exported Module*/
+EXPORT opencv := MODULE
+
+    /*Get LicensePlate function*/
+    EXPORT GETLICENSEPLATE(VARSTRING s) := FUNCTION
+        result:=LicenseService.GETLICENSEPLATE(s);
+        RETURN result;
+    END;
+
+    /*TrainKNN Function*/
+    EXPORT loadKNNDataAndTrainKNN() := FUNCTION
+        result:=KNNService.loadKNNDataAndTrainKNN();
+        RETURN result;
+    END;
+
+    /*Feature Matching*/
+    EXPORT MATCH_FEATURES(VARSTRING s1,VARSTRING s2) := FUNCTION
+        result:=FeatureService.MATCH_FEATURES(s1,s2);
+        RETURN result;
+    END;
+
+    /*Detect Edges*/
+    EXPORT DETECT_EDGE(VARSTRING s) := FUNCTION
+        result:=EdgeService.DETECT_EDGE(s);
+        RETURN result;
+    END;
+
+    /*Gaussian Blur function*/
+    EXPORT GETBLUR(VARSTRING s) := FUNCTION
+        result:=OpenCVService.GETBLUR(s);
+        RETURN result;
+    END;
+
+    /*Grayscale function*/
+    EXPORT GRAYSCALE(VARSTRING s) := FUNCTION
+        result:=OpenCVService.GRAYSCALE(s);
+        RETURN result;
+    END;
+
+    /*Thresholding function*/
+    EXPORT THRESH_HOLD(VARSTRING s,REAL threshval,REAL maxval=255,INTEGER type_1=0) := FUNCTION
+        result:=OpenCVService.THRESH_HOLD(s,threshval);
+        RETURN result;
+    END;
+
+    /*Resizing function*/
+    EXPORT RESIZE(VARSTRING s, REAL fx, REAL fy) := FUNCTION
+        result:=OpenCVService.RESIZE(s,fx,fy);
+        RETURN result;
+    END;
+
+    /*Translating an image function*/
+    EXPORT TRANSLATE(VARSTRING s,REAL rs, REAL cs) := FUNCTION
+        result:=OpenCVService.TRANSLATE(s,rs,cs);
+        RETURN result;
+    END;
+
+    /*Rotating an image function*/
+    EXPORT ROTATE(VARSTRING s, REAL angle, REAL scale,REAL x, REAL y) := FUNCTION
+        result:=OpenCVService.ROTATE(s,angle,scale,x,y);
+        RETURN result;
+    END;
+
+END;
