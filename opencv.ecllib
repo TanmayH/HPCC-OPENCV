@@ -39,7 +39,7 @@ EXPORT opencv := MODULE
 
     /*Gaussian Blur function*/
     /* Input: Path to Image, Destination Path, Scale of Gaussian Kernel (odd integer)
-       Output: 0 on success, -1 on failure*/
+       Output: Saves the blurred image at destination; returns 1 on success, 0 on failure*/
     EXPORT GAUSSBLUR(VARSTRING s,VARSTRING d, INTEGER depth) := FUNCTION
         result:=OpenCVService.GAUSSBLUR(s,d,depth);
         RETURN result;
@@ -47,7 +47,7 @@ EXPORT opencv := MODULE
 
     /*Grayscale function*/
     /* Input: Path to Image, Destination Path
-       Output: 0 on success, -1 on failure*/
+       Output: Saves the greyscaled image at destination; returns 1 on success, 0 on failure*/
     EXPORT GRAYSCALE(VARSTRING s,VARSTRING d) := FUNCTION
         result:=OpenCVService.GRAYSCALE(s,d);
         RETURN result;
@@ -55,7 +55,7 @@ EXPORT opencv := MODULE
 
     /*Thresholding function*/
     /* Input: Path to Image, Destination Path, Real threshval, Real maxval, Integer type
-       Output: 0 on success, -1 on failure*/
+       Output: Saves the thresholded image at destination; returns 1 on success, 0 on failure*/
     EXPORT THRESH_HOLD(VARSTRING s,VARSTRING d,REAL threshval,REAL maxval=255,INTEGER type_1=0) := FUNCTION
         result:=OpenCVService.THRESH_HOLD(s,d,threshval);
         RETURN result;
@@ -63,7 +63,7 @@ EXPORT opencv := MODULE
 
     /*Resizing function*/
     /* Input: Path to Image, Destination Path, Real x and y resizing coordinates as decimals
-       Output: 0 on success, -1 on failure*/
+       Output: Saves the resized image at destination; returns 1 on success, 0 on failure*/
     EXPORT RESIZE(VARSTRING s,VARSTRING d, REAL fx, REAL fy) := FUNCTION
         result:=OpenCVService.RESIZE(s,d,fx,fy);
         RETURN result;
@@ -71,7 +71,7 @@ EXPORT opencv := MODULE
 
     /*Translating an image function*/
     /* Input: Path to Image, Destination Path, Real x and y shifts
-       Output: 0 on success, -1 on failure*/
+       Output: Saves the translated image at destination; returns 1 on success, 0 on failure*/
     EXPORT TRANSLATE(VARSTRING s,VARSTRING d,REAL x, REAL y) := FUNCTION
         result:=OpenCVService.TRANSLATE(s,d,x,y);
         RETURN result;
@@ -79,7 +79,7 @@ EXPORT opencv := MODULE
 
     /*Rotating an image function*/
     /* Input: Path to Image, Destination Path, angle of rotation in degrees 
-       Output: 0 on success, -1 on failure*/
+       Output: Saves the rotated image at destination; returns 1 on success, 0 on failure*/
     EXPORT ROTATE(VARSTRING s,VARSTRING d, REAL angle) := FUNCTION
         result:=OpenCVService.ROTATE(s,d,angle);
         RETURN result;

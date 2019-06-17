@@ -1,7 +1,7 @@
 IMPORT opencv.opencv;
 
 /*Test case 1 for license plate detection*/
-res := opencv.GETLICENSEPLATE('./test_images/test1.jpg');
+// res := opencv.GETLICENSEPLATE('./test_images/test1.jpg');
 
 
 /*Test Case 2 for individual functions*/
@@ -10,7 +10,7 @@ res := opencv.GETLICENSEPLATE('./test_images/test1.jpg');
 // res:=opencv.THRESH_HOLD('./test_images/test2.jpg','./Modified_Images/ThresholdImage.jpg',10);
 // res:=opencv.RESIZE('./test_images/test2.jpg','./Modified_Images/ResizedImage.jpg',0.15,0.95);
 // res:=opencv.TRANSLATE('./test_images/test2.jpg','./Modified_Images/TranslatedImage.jpg',14,140);
-// res:=opencv.ROTATE('./test_images/test2.jpg','./Modified_Images/RotatedImage.jpg',-70);
+res:=opencv.ROTATE('./test_images/test2.jpg','./Modified_Images/RotatedImage.jpg',-70);
 
 
 /*Test case 3 for edge detection*/

@@ -184,7 +184,7 @@ namespace OPENCVLib
         if (image.empty())
         {
             cout << "Could not open or find the image" << endl;
-            return -1;
+            return 0;
         }
         
         /*Performing Blur */
@@ -212,7 +212,7 @@ namespace OPENCVLib
 
         destroyAllWindows(); 
 
-        return 0;
+        return 1;
     }
 
     /*Function to perform greyscale of an image */
@@ -223,7 +223,7 @@ namespace OPENCVLib
         if(! image.data )                             
         {
                 cout <<  "Could not open or find the image" << std::endl ;
-                return -1;
+                return 0;
         }
         Mat gray;
     
@@ -244,7 +244,7 @@ namespace OPENCVLib
     
         waitKey(0);
 
-        return 0;
+        return 1;
 
     }
 
@@ -256,7 +256,7 @@ namespace OPENCVLib
         if(! image.data )                             
         {
                 cout <<  "Could not open or find the image" << std::endl ;
-                return -1;
+                return 0;
         }
         Mat out;
 
@@ -274,13 +274,20 @@ namespace OPENCVLib
     
         waitKey(0);
 
-        return 0;
+        return 1;
     }
 
     /*Function to perform rotation of an image */
     OPENCVLIB_API long long OPENCVLIB_CALL rotate_img(const char * path,const char * dest,double angle)
     {
+        /*Loading source */
         cv::Mat src = cv::imread(path, CV_LOAD_IMAGE_UNCHANGED);
+
+        if(! src.data )                             
+        {
+                cout <<  "Could not open or find the image" << std::endl ;
+                return 0;
+        }
         
         /* Get rotation matrix */
         cv::Point2f center((src.cols-1)/2.0, (src.rows-1)/2.0);
@@ -308,7 +315,7 @@ namespace OPENCVLib
  
         waitKey(0);
 
-        return 0;
+        return 1;
 
     } 
 
@@ -320,7 +327,7 @@ namespace OPENCVLib
         if(! image.data )                             
         {
               cout <<  "Could not open or find the image" << std::endl ;
-              return -1;
+              return 0;
         }
         Mat res; 
 
@@ -337,7 +344,7 @@ namespace OPENCVLib
         std::cout << std::endl << "Press any key to close window.." << std::endl;               
  
         waitKey(0);
-        return 0;
+        return 1;
     }
 
     /*Function to perform translation of an image */
@@ -351,7 +358,7 @@ namespace OPENCVLib
         if(! src.data )                             
         {
               cout <<  "Could not open or find the image" << std::endl ;
-              return -1;
+              return 0;
         }
         
         /* Setting transform matrix */
@@ -375,7 +382,7 @@ namespace OPENCVLib
         std::cout << std::endl << "Press any key to close window.." << std::endl;
         waitKey(0);
 
-        return 0;
+        return 1;
 
     }
 
