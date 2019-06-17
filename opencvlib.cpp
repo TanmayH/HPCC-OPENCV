@@ -1,12 +1,5 @@
-
-// #include <opencv2/opencv.hpp>
-// #include <iostream>
-// #include <string> // for string class 
-// #include "Main.h"
+/*Base CPP File*/
 #include "opencvlib.hpp"
-
-/*Try to bring out Mat data type,vector of possible plates, imshow*/
-
 
 //==============================================================================
 // Service Library Code
@@ -24,20 +17,21 @@ namespace OPENCVLib
     const int ratio = 3;
     const int kernel_size = 3;
     const char* window_name = "Edge Map";
-    // using namespace cv::xfeatures2d;
-    OPENCVLIB_API bool OPENCVLIB_CALL loadKNNDataAndTrainKNN2()
-    {
-        bool blnKNNTrainingSuccessful = loadKNNDataAndTrainKNN();
-        return blnKNNTrainingSuccessful;
-    }
 
+    /*License Plate Detection function */
     OPENCVLIB_API void OPENCVLIB_CALL licenseplate(size32_t & __lenResult,char *  & __result,const char * path)
     {
-        
+        bool blnKNNTrainingSuccessful = loadKNNDataAndTrainKNN();
         cv::Mat imgOriginalScene;   
-        
         std::string fail = "Fail";
-        std::string result;       
+        std::string result;
+
+        /* Training KNN Modules */
+        if (!blnKNNTrainingSuccessful){
+            std::cout << "Error: KNN traning was not successful";
+        }   
+
+        /*Reading the image from the supplied path */    
         imgOriginalScene = cv::imread(path);   
 
         if (imgOriginalScene.empty()) 
@@ -47,11 +41,15 @@ namespace OPENCVLib
             __result=const_cast<char*>(fail.c_str());                                                                                       
         }
 
+        /*Detecting Plates */
         std::vector<PossiblePlate> vectorOfPossiblePlates = detectPlatesInScene(imgOriginalScene);          
 
+        /*Detecting Chars in Plates */
         vectorOfPossiblePlates = detectCharsInPlates(vectorOfPossiblePlates);                               
 
+        /*Original Image*/
         cv::imshow("car", imgOriginalScene);          
+
 
         if (vectorOfPossiblePlates.empty()) 
         {                                              
@@ -66,6 +64,7 @@ namespace OPENCVLib
         
             PossiblePlate licPlate = vectorOfPossiblePlates.front();
 
+            /*Displaying plates as overlay*/
             cv::imshow("imgPlate", licPlate.imgPlate);            
             cv::imshow("imgThresh", licPlate.imgThresh);
 
@@ -78,6 +77,7 @@ namespace OPENCVLib
 
             drawRedRectangleAroundPlate(imgOriginalScene, licPlate);
 
+            /*Setting Result*/
             __lenResult=licPlate.strChars.length();
             result=licPlate.strChars.c_str();
 
@@ -85,120 +85,19 @@ namespace OPENCVLib
             std::copy(result.begin(), result.end(), c);
             c[__lenResult] = '\0';
             __result=c;
-            
-
-            std::cout << std::endl << "license plate read from image = " << licPlate.strChars.c_str() << std::endl;     
-            std::cout << std::endl << "-----------------------------------------" << std::endl;
+                
+            std::cout << std::endl << "Press any key to close window.." << std::endl;
 
             writeLicensePlateCharsOnImage(imgOriginalScene, licPlate);            
 
             cv::imshow("car", imgOriginalScene);                      
 
-            cv::imwrite("processed_car_image.png", imgOriginalScene);
-
             cv::waitKey(0);        
         }
 
     }
-    
-    
-    // OPENCVLIB_API void OPENCVLIB_CALL feature_match(size32_t & __lenResult,char *  & __result,const char * path_src,const char * path_dest)
-    // {
-    //     std::string fail = "Fail";
-    //     std::string result;  
-        
-  
-    //     Mat img_1 = imread( path_src, IMREAD_GRAYSCALE );
-    //     Mat img_2 = imread( path_dest, IMREAD_GRAYSCALE );
-    //     if( !img_1.data || !img_2.data )
-    //     { 
-    //         std::cout<< " --(!) Error reading images " << std::endl; 
-    //         __lenResult=4;
-    //         __result=const_cast<char*>(fail.c_str()); 
-    //     }
 
-    //     //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
-    //     int minHessian = 400;
-    //     Ptr<SURF> detector = SURF::create();
-    //     detector->setHessianThreshold(minHessian);
-    //     std::vector<KeyPoint> keypoints_1, keypoints_2;
-    //     Mat descriptors_1, descriptors_2;
-    //     detector->detectAndCompute( img_1, Mat(), keypoints_1, descriptors_1 );
-    //     detector->detectAndCompute( img_2, Mat(), keypoints_2, descriptors_2 );
-        
-    //     //-- Step 2: Matching descriptor vectors using FLANN matcher
-    //     FlannBasedMatcher matcher;
-    //     std::vector< DMatch > matches;
-    //     matcher.match( descriptors_1, descriptors_2, matches );
-    //     double max_dist = 0; double min_dist = 100;
-        
-    //     //-- Quick calculation of max and min distances between keypoints
-    //     for( int i = 0; i < descriptors_1.rows; i++ )
-    //     { double dist = matches[i].distance;
-    //         if( dist < min_dist ) min_dist = dist;
-    //         if( dist > max_dist ) max_dist = dist;
-    //     }
-    //     printf("-- Max dist : %f \n", max_dist );
-    //     printf("-- Min dist : %f \n", min_dist );
-        
-    //     //-- Draw only "good" matches (i.e. whose distance is less than 2*min_dist,
-    //     //-- or a small arbitary value ( 0.02 ) in the event that min_dist is very
-    //     //-- small)
-    //     //-- PS.- radiusMatch can also be used here.
-    //     std::vector< DMatch > good_matches;
-    //     for( int i = 0; i < descriptors_1.rows; i++ )
-    //     { 
-    //         if( matches[i].distance <= max(2*min_dist, 0.02) )
-    //         { 
-    //             good_matches.push_back( matches[i]); 
-    //         }
-    //     }
-        
-    //     //-- Draw only "good" matches
-    //     Mat img_matches;
-    //     drawMatches( img_1, keypoints_1, img_2, keypoints_2,
-    //                 good_matches, img_matches, Scalar::all(-1), Scalar::all(-1),
-    //                 vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
-        
-    //     //-- Show detected matches
-    //     imshow( "Good Matches", img_matches );
-        
-    //     for( int i = 0; i < (int)good_matches.size(); i++ )
-    //     { 
-    //         printf( "-- Good Match [%d] Keypoint 1: %d  -- Keypoint 2: %d  \n", i, good_matches[i].queryIdx, good_matches[i].trainIdx ); 
-    //     }
-    //     waitKey(0);
-
-    // }
-
-    OPENCVLIB_API long long OPENCVLIB_CALL edge_detect(const char * path)
-    {   
-        src = imread( path, IMREAD_COLOR ); // Load an image
-        if( src.empty() )
-        {
-            std::cout << "Could not open or find the image!\n" << std::endl;
-            return 0;
-        }
-        dst.create( src.size(), src.type() );
-        cvtColor( src, src_gray, COLOR_BGR2GRAY );
-        namedWindow( window_name, WINDOW_AUTOSIZE );
-        createTrackbar( "Min Threshold:", window_name, &lowThreshold, max_lowThreshold, CannyThreshold );
-        CannyThreshold(0, 0);
-        waitKey(0);
-        return 1;
-    }
-
-    static void CannyThreshold(int, void*)
-    {
-        blur( src_gray, detected_edges, Size(3,3) );
-        Canny( detected_edges, detected_edges, lowThreshold, lowThreshold*ratio, kernel_size );
-        dst = Scalar::all(0);
-        src.copyTo( dst, detected_edges);
-        imshow( window_name, dst );
-    }
-
-
-
+    /*Function to draw Rectangular Bounds around Plates */
     void drawRedRectangleAroundPlate(cv::Mat &imgOriginalScene, PossiblePlate &licPlate) 
     {
         cv::Point2f p2fRectPoints[4];
@@ -211,7 +110,7 @@ namespace OPENCVLib
         }
     }
 
-
+    /*Function to write License Plate Chars on Image*/ 
     void writeLicensePlateCharsOnImage(cv::Mat &imgOriginalScene, PossiblePlate &licPlate) 
     {
         cv::Point ptCenterOfTextArea;                   
@@ -239,43 +138,75 @@ namespace OPENCVLib
         cv::putText(imgOriginalScene, licPlate.strChars, ptLowerLeftTextOrigin, intFontFace, dblFontScale, SCALAR_YELLOW, intFontThickness);
     }
 
+    /* ============================================================================================================================ */
+    
+    /*Edge Detection function */
+    OPENCVLIB_API long long OPENCVLIB_CALL edge_detect(const char * path)
+    {   
+        /*Load the image */
+        src = imread( path, IMREAD_COLOR );
+        if( src.empty() )
+        {
+            std::cout << "Could not open or find the image!\n" << std::endl;
+            return 0;
+        }
 
-    
-    
-    OPENCVLIB_API long long OPENCVLIB_CALL gaussblur(const char * path)
+        dst.create( src.size(), src.type() );
+        cvtColor( src, src_gray, COLOR_BGR2GRAY );
+        namedWindow( window_name, WINDOW_AUTOSIZE );
+
+        /*Setting the Threshold */
+        createTrackbar( "Min Threshold:", window_name, &lowThreshold, max_lowThreshold, CannyThreshold );
+        CannyThreshold(0, 0);
+        std::cout << std::endl << "Press any key to close window.." << std::endl;
+
+        waitKey(0);
+        return 1;
+    }
+
+    /*Threshold Setter */
+    static void CannyThreshold(int, void*)
     {
-        Mat image = imread(path);
+        blur( src_gray, detected_edges, Size(3,3) );
+        Canny( detected_edges, detected_edges, lowThreshold, lowThreshold*ratio, kernel_size );
+        dst = Scalar::all(0);
+        src.copyTo( dst, detected_edges);
+        imshow( window_name, dst );
+    }
 
+    /* ============================================================================================================================ */
     
+    /*Function to perform gaussian blur of an image */
+    OPENCVLIB_API long long OPENCVLIB_CALL gaussblur(const char * path,const char * dest, long long scale)
+    {
+        /*Loading source */
+        Mat image = imread(path);
         if (image.empty())
         {
             cout << "Could not open or find the image" << endl;
-            cin.get(); //wait for any key press
             return -1;
         }
-
-
-        Mat image_blurred_with_3x3_kernel;
-        GaussianBlur(image, image_blurred_with_3x3_kernel, Size(9, 9), 0);
+        
+        /*Performing Blur */
+        Mat image_blurred_with_nxn_kernel;
+        GaussianBlur(image, image_blurred_with_nxn_kernel, Size(scale, scale), 0);
 
         
-        Mat image_blurred_with_5x5_kernel;
-        GaussianBlur(image, image_blurred_with_5x5_kernel, Size(17, 17), 0);
+        String window_name = "Image";
+        String window_name_blurred_with_nxn_kernel = "Image after Gaussian Blur" ;
 
-        
-        String window_name = "Car";
-        String window_name_blurred_with_3x3_kernel = "Car Blurred with 9 X 9 Gaussian Kernel";
-        String window_name_blurred_with_5x5_kernel = "Car Blurred with 17 X 17 Gaussian Kernel";
-
-        
+        /*Displaying Original and blurred image*/
         namedWindow(window_name);
-        namedWindow(window_name_blurred_with_3x3_kernel);
-        namedWindow(window_name_blurred_with_5x5_kernel);
+        namedWindow(window_name_blurred_with_nxn_kernel);
 
         
         imshow(window_name, image);
-        imshow(window_name_blurred_with_3x3_kernel, image_blurred_with_3x3_kernel);
-        imshow(window_name_blurred_with_5x5_kernel, image_blurred_with_5x5_kernel);
+        imshow(window_name_blurred_with_nxn_kernel, image_blurred_with_nxn_kernel);
+
+        /*Writing result to destination */
+        imwrite(dest,image_blurred_with_nxn_kernel);
+
+        std::cout << std::endl << "Press any key to close window.." << std::endl;
 
         waitKey(0); 
 
@@ -284,11 +215,11 @@ namespace OPENCVLib
         return 0;
     }
 
-
-    OPENCVLIB_API long long OPENCVLIB_CALL grayscale(const char * path)
+    /*Function to perform greyscale of an image */
+    OPENCVLIB_API long long OPENCVLIB_CALL grayscale(const char * path, const char * dest)
     {
-        //TODO: pass other parameters for hsv,grayscale and all
-            Mat image = imread(path);
+        /*Loading source */
+        Mat image = imread(path);
         if(! image.data )                             
         {
                 cout <<  "Could not open or find the image" << std::endl ;
@@ -296,160 +227,159 @@ namespace OPENCVLib
         }
         Mat gray;
     
-        // convert RGB image to gray
+        /*convert RGB image to gray*/
         cvtColor(image, gray, CV_BGR2GRAY);
-    
+
+        /*Display Original and greyscaled results*/
         namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
         imshow( "Display window", image );                 
     
         namedWindow( "Result window", CV_WINDOW_AUTOSIZE );   
         imshow( "Result window", gray );
+
+        /*Writing result to destination */
+        imwrite(dest,gray);
+
+        std::cout << std::endl << "Press any key to close window.." << std::endl;
     
         waitKey(0);
-    
 
         return 0;
 
     }
 
-
-    OPENCVLIB_API long long OPENCVLIB_CALL resize(const char * path, double fx, double fy)
+    /*Function to perform resizing of an image */
+    OPENCVLIB_API long long OPENCVLIB_CALL resize(const char * path, const char * dest,double fx, double fy)
     {
-            //TODO: pass other parameters for hsv,grayscale and all
-            Mat image = imread(path);
+        /*Loading source */
+        Mat image = imread(path);
         if(! image.data )                             
         {
                 cout <<  "Could not open or find the image" << std::endl ;
                 return -1;
         }
         Mat out;
-    
-        // convert RGB image to gray
-        resize(image, out, Size(),fx,fy);
-    
-        namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
-        imshow( "Display window", out );                 
-    
 
+        /*Performing resize*/
+        resize(image, out, Size(),fx,fy);
+        
+        /*Displaying Results*/
+        namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
+        imshow( "Display window", out );  
+
+        /*Writing result to destination */
+        imwrite(dest,out);
+
+        std::cout << std::endl << "Press any key to close window.." << std::endl;               
     
         waitKey(0);
-    
 
         return 0;
-
-
-
-
     }
 
-    OPENCVLIB_API long long OPENCVLIB_CALL rotate_img(const char * path,double angle,double scale, double x=-1.0, double y=-1.0)
+    /*Function to perform rotation of an image */
+    OPENCVLIB_API long long OPENCVLIB_CALL rotate_img(const char * path,const char * dest,double angle)
     {
+        cv::Mat src = cv::imread(path, CV_LOAD_IMAGE_UNCHANGED);
+        
+        /* Get rotation matrix */
+        cv::Point2f center((src.cols-1)/2.0, (src.rows-1)/2.0);
+        cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
 
-          //TODO: pass other parameters for hsv,grayscale and all
-        Mat image = imread(path);
-        if(! image.data )                             
-            {
-              cout <<  "Could not open or find the image" << std::endl ;
-              return -1;
-        }
-        Mat gray;
-    
-        if(x==-1.0){
-            x=image.cols/2;
-        }
-        if(y==-1.0){
-            y=image.rows/2;
-        }
+        /*Obtain Bounding Ractangle*/
+        cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), src.size(), angle).boundingRect2f();
 
-       // convert RGB image to gray
-        Mat dst1;
-    
-        Mat res = getRotationMatrix2D(Point(x,y), angle, scale);
-        warpAffine(image,dst1,res,image.size()); 
-        namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
-        imshow( "Display window", dst1);                 
-    
-   
+        /*Adjust transformation matrix */
+        rot.at<double>(0,2) += bbox.width/2.0 - src.cols/2.0;
+        rot.at<double>(1,2) += bbox.height/2.0 - src.rows/2.0;
+
+        /*Perform Rotation */
+        cv::Mat dst;
+        cv::warpAffine(src, dst, rot, bbox.size());
+
+        /*Display Results */
+        namedWindow( "Result window", CV_WINDOW_AUTOSIZE );   
+        imshow( "Result window", dst );
+
+        /*Writing Results to destination*/
+        cv::imwrite(dest, dst);
+
+        std::cout << std::endl << "Press any key to close window.." << std::endl;             
  
         waitKey(0);
- 
 
         return 0;
 
     } 
 
-    OPENCVLIB_API long long OPENCVLIB_CALL threshold_img(const char * path, double threshval, double maxval=255,long long type=0 )
+    /*Function to thresholding of an image */
+    OPENCVLIB_API long long OPENCVLIB_CALL threshold_img(const char * path, const char * dest,double threshval, double maxval=255,long long type=0 )
     {
-          //TODO: pass other parameters for various 5 types of thresholding
-
-        // src_gray: Our input image
-        // dst: Destination (output) image
-        // threshold_value: The thresh value with respect to which the thresholding operation is made
-        // max_BINARY_value: The value used with the Binary thresholding operations (to set the chosen pixels)
-        // threshold_type: One of the 5 thresholding operations. 
+        /*Loading source */
         Mat image = imread(path,0);
         if(! image.data )                             
-       {
+        {
               cout <<  "Could not open or find the image" << std::endl ;
               return -1;
-       }
-        Mat res;
-        /* 0: Binary
-        1: Binary Inverted
-        2: Threshold Truncated
-        3: Threshold to Zero
-        4: Threshold to Zero Inverted
-        */
+        }
+        Mat res; 
 
+        /*Performing thresholding */
         threshold(image,res, threshval,maxval,type);
  
+        /*Displaying Results */
         namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
-        imshow( "Display window", res );                 
- 
+        imshow( "Display window", res );  
 
+        /*Writing result to destination */
+        imwrite(dest,res);
+
+        std::cout << std::endl << "Press any key to close window.." << std::endl;               
  
         waitKey(0);
- 
-
         return 0;
-
-
     }
 
-    OPENCVLIB_API long long OPENCVLIB_CALL translate_img(const char * path, double rs,double cs)
+    /*Function to perform translation of an image */
+    OPENCVLIB_API long long OPENCVLIB_CALL translate_img(const char * path,const char * dest, double x,double y)
     {
-          //TODO: pass other parameters for hsv,grayscale and all
-          //https://www.learnopencv.com/warp-one-triangle-to-another-using-opencv-c-python/
-        Mat image = imread(path);
-        if(! image.data )                             
-       {
+        /*Loading source */
+        Mat src, warp_dst;
+        Mat warp_mat = Mat::eye(2, 3, CV_64F);
+
+        src = imread( path, 1 );
+        if(! src.data )                             
+        {
               cout <<  "Could not open or find the image" << std::endl ;
               return -1;
-       }
- 
-       // convert RGB image to gray
-        Mat out = Mat::zeros(image.size(), image.type());
+        }
+        
+        /* Setting transform matrix */
+        warp_dst = Mat::zeros( src.rows, src.cols, src.type() );
+        warp_mat.at<double>(0,2) = x; 
+        warp_mat.at<double>(1,2) = y;
 
-        Mat par = Mat(2, 3, CV_64FC1); // Allocate memory
-        par.at<double>(0,0)=  1;  //p1
-        par.at<double>(1,0)=  0;  //p2;
-        par.at<double>(0,1)= 0; //p3;
-        par.at<double>(1,1)= 1;  //p4;
-        par.at<double>(0,2)= cs;   //p5;
-        par.at<double>(1,2)= rs;//p6;
-        warpAffine(image,par,out,image.size());
+        /*Applying Affine Transform */
+        warpAffine( src, warp_dst, warp_mat, warp_dst.size() );
 
-        namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
-        imshow( "Display window", out );                 
- 
+        /*Displaying Results */
+        namedWindow( "Source Window", CV_WINDOW_AUTOSIZE );
+        imshow( "Source Window", src );
 
- 
-         waitKey(0);
- 
+        namedWindow( "Warp Window", CV_WINDOW_AUTOSIZE );
+        imshow( "Warp Window", warp_dst );
+
+        /*Writing result to destination */
+        imwrite(dest,warp_dst);
+
+        std::cout << std::endl << "Press any key to close window.." << std::endl;
+        waitKey(0);
 
         return 0;
 
     }
 
-} // namespace
+    /* ============================================================================================================================ */
+
+} 
 

@@ -1,8 +1,4 @@
-/*******************************************************************************
- * Dependencies:
- *      sudo apt-get install libcurl3-gnutls
- */
-
+/*Base Header File */
 #ifndef OPENCVLIB_INCL
 #define OPENCVLIB_INCL
 
@@ -28,7 +24,6 @@
 #include<opencv2/ml/ml.hpp>
 #include<opencv2/features2d.hpp>
 #include<opencv2/imgcodecs.hpp>
-// #include "./xfeatures2d/xfeatures2d.hpp"
 
 #include "./License_Plate_Files/DetectPlates/DetectPlates.h"
 #include "./License_Plate_Files/PossibleChar/PossibleChar.h"
@@ -50,23 +45,19 @@ extern "C++"
     {   
         OPENCVLIB_API void OPENCVLIB_CALL licenseplate(const char *  & __result,const char * path);
 
-        OPENCVLIB_API bool OPENCVLIB_CALL loadKNNDataAndTrainKNN2();
-
-        // OPENCVLIB_API void OPENCVLIB_CALL feature_match(size32_t & __lenResult,char *  & __result,const char * path_src,const char * path_dest)
-
         OPENCVLIB_API long long OPENCVLIB_CALL edge_detect(const char * path);
         
-        OPENCVLIB_API long long OPENCVLIB_CALL gaussblur(const char * path);
+        OPENCVLIB_API long long OPENCVLIB_CALL gaussblur(const char * path,const char * dest,long long scale);
 
-        OPENCVLIB_API long long OPENCVLIB_CALL grayscale(const char * path);
+        OPENCVLIB_API long long OPENCVLIB_CALL grayscale(const char * path, const char * dest);
 
-        OPENCVLIB_API long long OPENCVLIB_CALL resize(const char * path,double fx, double fy);
+        OPENCVLIB_API long long OPENCVLIB_CALL resize(const char * path,const char * dest,double fx, double fy);
 
-        OPENCVLIB_API long long OPENCVLIB_CALL rotate_img(const char * path,double angle, double scale,double x, double y);
+        OPENCVLIB_API long long OPENCVLIB_CALL rotate_img(const char * path,const char * dest,double angle);
  
-        OPENCVLIB_API long long OPENCVLIB_CALL threshold_img(const char * path,double threshval,double maxval,long long type);
+        OPENCVLIB_API long long OPENCVLIB_CALL threshold_img(const char * path,const char * dest,double threshval,double maxval,long long type);
 
-        OPENCVLIB_API long long OPENCVLIB_CALL translate_img(const char * path,double rs, double cs);
+        OPENCVLIB_API long long OPENCVLIB_CALL translate_img(const char * path,const char * dest,double x, double y);
         
         void drawRedRectangleAroundPlate(cv::Mat &imgOriginalScene, PossiblePlate &licPlate);
         void writeLicensePlateCharsOnImage(cv::Mat &imgOriginalScene, PossiblePlate &licPlate);

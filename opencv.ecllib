@@ -1,16 +1,6 @@
-/*Service for the Complete License Plate detection*/
+/*Service for the License Plate detection*/
 SHARED LicenseService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
     STRING GETLICENSEPLATE(VARSTRING s) : cpp,entrypoint='licenseplate';
-END;
-
-/*Service for training KNN set*/
-SHARED KNNService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
-    BOOLEAN loadKNNDataAndTrainKNN() : cpp,entrypoint='loadKNNDataAndTrainKNN2';
-END;
-
-/*Service for Feature Matching*/
-SHARED FeatureService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
-    STRING MATCH_FEATURES(VARSTRING s1,VARSTRING s2) : cpp,entrypoint='feature_match';
 END;
 
 /*Service for Edge Detection*/
@@ -20,74 +10,78 @@ END;
 
 /*Service for OpenCVHandlers*/
 SHARED OpenCVService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
-    INTEGER GETBLUR(VARSTRING s) : cpp,entrypoint='gaussblur';
-    INTEGER GRAYSCALE(VARSTRING s) : cpp,entrypoint='grayscale';
-    INTEGER THRESH_HOLD(VARSTRING s,REAL threshval,REAL maxval=255,INTEGER type_1=0) : cpp,entrypoint='threshold_img';
-    INTEGER RESIZE(VARSTRING s, REAL fx, REAL fy) : cpp,entrypoint='resize';
-    INTEGER TRANSLATE(VARSTRING s,REAL rs, REAL cs) : cpp,entrypoint='translate_img';
-    INTEGER ROTATE(VARSTRING s, REAL angle, REAL scale,REAL x, REAL y) : cpp,entrypoint='rotate_img';
+    INTEGER GAUSSBLUR(VARSTRING s,VARSTRING d,INTEGER depth) : cpp,entrypoint='gaussblur';
+    INTEGER GRAYSCALE(VARSTRING s,VARSTRING d) : cpp,entrypoint='grayscale';
+    INTEGER THRESH_HOLD(VARSTRING s,VARSTRING d,REAL threshval,REAL maxval=255,INTEGER type_1=0) : cpp,entrypoint='threshold_img';
+    INTEGER RESIZE(VARSTRING s,VARSTRING d, REAL fx, REAL fy) : cpp,entrypoint='resize';
+    INTEGER TRANSLATE(VARSTRING s,VARSTRING d,REAL x, REAL y) : cpp,entrypoint='translate_img';
+    INTEGER ROTATE(VARSTRING s,VARSTRING d, REAL angle) : cpp,entrypoint='rotate_img';
 END;
 
 /*Exported Module*/
 EXPORT opencv := MODULE
 
     /*Get LicensePlate function*/
+    /* Input: Path to Image
+       Output: License Plate Characters*/ 
     EXPORT GETLICENSEPLATE(VARSTRING s) := FUNCTION
         result:=LicenseService.GETLICENSEPLATE(s);
         RETURN result;
     END;
 
-    /*TrainKNN Function*/
-    EXPORT loadKNNDataAndTrainKNN() := FUNCTION
-        result:=KNNService.loadKNNDataAndTrainKNN();
-        RETURN result;
-    END;
-
-    /*Feature Matching*/
-    EXPORT MATCH_FEATURES(VARSTRING s1,VARSTRING s2) := FUNCTION
-        result:=FeatureService.MATCH_FEATURES(s1,s2);
-        RETURN result;
-    END;
-
-    /*Detect Edges*/
+    /*Detect Edge function*/
+    /* Input: Path to Image
+       Output: Edge Detection Window*/ 
     EXPORT DETECT_EDGE(VARSTRING s) := FUNCTION
         result:=EdgeService.DETECT_EDGE(s);
         RETURN result;
     END;
 
     /*Gaussian Blur function*/
-    EXPORT GETBLUR(VARSTRING s) := FUNCTION
-        result:=OpenCVService.GETBLUR(s);
+    /* Input: Path to Image, Destination Path, Scale of Gaussian Kernel (odd integer)
+       Output: 0 on success, -1 on failure*/
+    EXPORT GAUSSBLUR(VARSTRING s,VARSTRING d, INTEGER depth) := FUNCTION
+        result:=OpenCVService.GAUSSBLUR(s,d,depth);
         RETURN result;
     END;
 
     /*Grayscale function*/
-    EXPORT GRAYSCALE(VARSTRING s) := FUNCTION
-        result:=OpenCVService.GRAYSCALE(s);
+    /* Input: Path to Image, Destination Path
+       Output: 0 on success, -1 on failure*/
+    EXPORT GRAYSCALE(VARSTRING s,VARSTRING d) := FUNCTION
+        result:=OpenCVService.GRAYSCALE(s,d);
         RETURN result;
     END;
 
     /*Thresholding function*/
-    EXPORT THRESH_HOLD(VARSTRING s,REAL threshval,REAL maxval=255,INTEGER type_1=0) := FUNCTION
-        result:=OpenCVService.THRESH_HOLD(s,threshval);
+    /* Input: Path to Image, Destination Path, Real threshval, Real maxval, Integer type
+       Output: 0 on success, -1 on failure*/
+    EXPORT THRESH_HOLD(VARSTRING s,VARSTRING d,REAL threshval,REAL maxval=255,INTEGER type_1=0) := FUNCTION
+        result:=OpenCVService.THRESH_HOLD(s,d,threshval);
         RETURN result;
     END;
 
     /*Resizing function*/
-    EXPORT RESIZE(VARSTRING s, REAL fx, REAL fy) := FUNCTION
-        result:=OpenCVService.RESIZE(s,fx,fy);
+    /* Input: Path to Image, Destination Path, Real x and y resizing coordinates as decimals
+       Output: 0 on success, -1 on failure*/
+    EXPORT RESIZE(VARSTRING s,VARSTRING d, REAL fx, REAL fy) := FUNCTION
+        result:=OpenCVService.RESIZE(s,d,fx,fy);
         RETURN result;
     END;
 
     /*Translating an image function*/
-    EXPORT TRANSLATE(VARSTRING s,REAL rs, REAL cs) := FUNCTION
-        result:=OpenCVService.TRANSLATE(s,rs,cs);
+    /* Input: Path to Image, Destination Path, Real x and y shifts
+       Output: 0 on success, -1 on failure*/
+    EXPORT TRANSLATE(VARSTRING s,VARSTRING d,REAL x, REAL y) := FUNCTION
+        result:=OpenCVService.TRANSLATE(s,d,x,y);
         RETURN result;
     END;
 
     /*Rotating an image function*/
-    EXPORT ROTATE(VARSTRING s, REAL angle, REAL scale,REAL x, REAL y) := FUNCTION
-        result:=OpenCVService.ROTATE(s,angle,scale,x,y);
+    /* Input: Path to Image, Destination Path, angle of rotation in degrees 
+       Output: 0 on success, -1 on failure*/
+    EXPORT ROTATE(VARSTRING s,VARSTRING d, REAL angle) := FUNCTION
+        result:=OpenCVService.ROTATE(s,d,angle);
         RETURN result;
     END;
 
