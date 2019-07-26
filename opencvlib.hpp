@@ -43,7 +43,7 @@ extern "C++"
 {
     namespace OPENCVLib
     {   
-        OPENCVLIB_API void OPENCVLIB_CALL licenseplate(const char *  & __result,const char * path);
+        OPENCVLIB_API void OPENCVLIB_CALL licenseplate(const char * & __result,const void * s);
 
         OPENCVLIB_API long long OPENCVLIB_CALL edge_detect(const char * path);
         

@@ -19,24 +19,27 @@ namespace OPENCVLib
     const char* window_name = "Edge Map";
 
     /*License Plate Detection function */
-    OPENCVLIB_API void OPENCVLIB_CALL licenseplate(size32_t & __lenResult,char *  & __result,const char * path)
+    OPENCVLIB_API void OPENCVLIB_CALL licenseplate(size32_t & __lenResult,char *  & __result, size32_t lenData,const void * data)
     {
         bool blnKNNTrainingSuccessful = loadKNNDataAndTrainKNN();
         cv::Mat imgOriginalScene;   
-        std::string fail = "Fail";
+        std::string fail = "Failure";
         std::string result;
-
+        std::vector<char> img_data((char *) data, (char *)data + lenData);
         /* Training KNN Modules */
         if (!blnKNNTrainingSuccessful){
             std::cout << "Error: KNN traning was not successful";
-        }   
+        }
+
+        // imwrite("./test.jpg",Mat(img_data));
 
         /*Reading the image from the supplied path */    
-        imgOriginalScene = cv::imread(path);   
+        imgOriginalScene = cv::imdecode(Mat(img_data), -1);  
+        cv:imshow("car",imgOriginalScene);
 
         if (imgOriginalScene.empty()) 
         {                             
-            std::cout << "error: image not read from file\n\n";     
+            // std::cout << "error: image not read from file\n\n";     
             __lenResult=4;
             __result=const_cast<char*>(fail.c_str());                                                                                       
         }
@@ -49,11 +52,9 @@ namespace OPENCVLib
 
         /*Original Image*/
         cv::imshow("car", imgOriginalScene);          
-
-
         if (vectorOfPossiblePlates.empty()) 
         {                                              
-            std::cout << std::endl << "no license plates were detected" << std::endl;     
+            // std::cout << std::endl << "no license plates were detected" << std::endl;     
             __lenResult=4;
             __result=const_cast<char*>(fail.c_str());
         }
@@ -65,17 +66,17 @@ namespace OPENCVLib
             PossiblePlate licPlate = vectorOfPossiblePlates.front();
 
             /*Displaying plates as overlay*/
-            cv::imshow("imgPlate", licPlate.imgPlate);            
-            cv::imshow("imgThresh", licPlate.imgThresh);
+            // cv::imshow("imgPlate", licPlate.imgPlate);            
+            // cv::imshow("imgThresh", licPlate.imgThresh);
 
             if (licPlate.strChars.length() == 0) 
             {                                                     
-                std::cout << std::endl << "no characters were detected" << std::endl << std::endl;      
+                // std::cout << std::endl << "no characters were detected" << std::endl << std::endl;      
                 __lenResult=4;
                 __result=const_cast<char*>(fail.c_str());                                                                        
             }
 
-            drawRedRectangleAroundPlate(imgOriginalScene, licPlate);
+            // drawRedRectangleAroundPlate(imgOriginalScene, licPlate);
 
             /*Setting Result*/
             __lenResult=licPlate.strChars.length();
@@ -86,13 +87,13 @@ namespace OPENCVLib
             c[__lenResult] = '\0';
             __result=c;
                 
-            std::cout << std::endl << "Press any key to close window.." << std::endl;
+            // std::cout << std::endl << "Press any key to close window.." << std::endl;
 
-            writeLicensePlateCharsOnImage(imgOriginalScene, licPlate);            
+            // writeLicensePlateCharsOnImage(imgOriginalScene, licPlate);            
 
-            cv::imshow("car", imgOriginalScene);                      
+            // cv::imshow("car", imgOriginalScene);                      
 
-            cv::waitKey(0);        
+            // cv::waitKey(0);        
         }
 
     }

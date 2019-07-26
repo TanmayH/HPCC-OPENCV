@@ -1,6 +1,6 @@
 /*Service for the License Plate detection*/
 SHARED LicenseService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
-    STRING GETLICENSEPLATE(VARSTRING s) : cpp,entrypoint='licenseplate';
+    STRING GETLICENSEPLATE(DATA s) : cpp,entrypoint='licenseplate';
 END;
 
 /*Service for Edge Detection*/
@@ -24,7 +24,7 @@ EXPORT opencv := MODULE
     /*Get LicensePlate function*/
     /* Input: Path to Image
        Output: License Plate Characters*/ 
-    EXPORT GETLICENSEPLATE(VARSTRING s) := FUNCTION
+    EXPORT GETLICENSEPLATE(DATA s) := FUNCTION
         result:=LicenseService.GETLICENSEPLATE(s);
         RETURN result;
     END;
