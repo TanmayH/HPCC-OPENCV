@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+################################################################################
+#    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems®.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+################################################################################
+-->
+
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Rajeev Moondhra (Seisint, Inc.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:include schemaLocation="environment.xsd"/>
+  <xs:element name="ThorCluster">
+    <xs:annotation>
+      <xs:documentation>Describes a thor cluster</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+    <!--DOC-Autobuild-code-->
+    <xs:annotation>
+       <xs:appinfo>
+      	  <docid>Th.t1</docid>
+       </xs:appinfo>
+    </xs:annotation>  
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="ThorSpareProcess" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>Describes a thor spare</xs:documentation>
+            <xs:appinfo>
+              <viewType>none</viewType>
+            </xs:appinfo>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:complexContent>
+              <xs:extension base="SimpleProcessBase"/>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ThorSlaveProcess" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>Describes a thor slave</xs:documentation>
+            <xs:appinfo>
+              <viewType>none</viewType>
+            </xs:appinfo>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:complexContent>
+              <xs:extension base="SimpleProcessBase"/>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ThorMasterProcess">
+          <xs:annotation>
+            <xs:documentation>Describes a thormaster</xs:documentation>
+            <xs:appinfo>
+              <viewType>none</viewType>
+            </xs:appinfo>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:complexContent>
+              <xs:extension base="SimpleProcessBase"/>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Topology">
+          <xs:annotation>
+            <xs:appinfo>
+              <viewType>thor_topology</viewType>
+            </xs:appinfo>
+            <xs:documentation>Describes the Topology of the given thor cluster</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence maxOccurs="unbounded">
+              <xs:element name="Node" type="NodeType" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+          <xs:keyref name="thorProcessKeyRef1" refer="thorProcessKey">
+            <xs:selector xpath=".//*"/>
+            <xs:field xpath="@process"/>
+          </xs:keyref>
+        </xs:element>
+        <xs:element name="SSH">
+          <xs:annotation>
+            <xs:appinfo>
+              <title>SSH options</title>
+              <tooltip>Options for using SSH remote execution</tooltip>
+            </xs:appinfo>
+          </xs:annotation>
+          <xs:complexType> 
+          <!--DOC-Autobuild-code-->
+	  <xs:annotation>
+	     <xs:appinfo>
+	  	<docid>Th.t3</docid>
+	     </xs:appinfo>
+	  </xs:annotation>  
+          <xs:attribute name="SSHidentityfile" type="xs:string" default="$HOME/.ssh/id_rsa">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>location of identity file (private key) on Thor master</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="SSHusername" type="xs:string" default="hpcc">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>Username to use when running Thor slaves</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="SSHpassword" type="xs:string" default="">
+            <xs:annotation>
+              <xs:appinfo>
+                <viewType>password</viewType>
+                <tooltip>Fixed password - only required if no identity file present NB **insecure**</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="SSHtimeout" type="xs:nonNegativeInteger" default="0">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>Timeout in seconds for SSH connects</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="SSHretries" type="xs:nonNegativeInteger" default="3">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>Number of times to retry failed connect</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Debug">
+          <xs:annotation>
+            <xs:appinfo>
+              <title>Debug</title>
+            </xs:appinfo>
+          </xs:annotation>
+          <xs:complexType>
+         <!--DOC-Autobuild-code-->
+	   <xs:annotation>
+	      <xs:appinfo>
+	  	<docid>Th.t2</docid>
+	      </xs:appinfo>
+	    </xs:annotation>  
+            <xs:attribute name="dllsToSlaves" type="xs:boolean" use="optional" default="true">
+              <xs:annotation>
+                <xs:appinfo>
+                  <tooltip>Controls whether query DLLs are broadcast to slaves at start of query, or loaded from master's shared directory.</tooltip>
+                </xs:appinfo>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="crcReadEnabled" type="xs:boolean" use="optional" default="true">
+              <xs:annotation>
+                <xs:appinfo>
+                  <tooltip>Verify that a read file's CRC matches the published meta data CRC</tooltip>
+                </xs:appinfo>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="crcWriteEnabled" type="xs:boolean" use="optional" default="true">
+              <xs:annotation>
+                <xs:appinfo>
+                  <tooltip>Calculate and publish a CRC per published disk output file</tooltip>
+                </xs:appinfo>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="slaveDaliClient" type="xs:boolean" use="optional" default="false">
+              <xs:annotation>
+                <xs:appinfo>
+                  <tooltip>Set to true if thor slaves require dali connectivity</tooltip>
+                </xs:appinfo>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="SwapNode">
+          <xs:annotation>
+            <xs:appinfo>
+              <title>SwapNode</title>
+              <tooltip>Options for automatic node swap</tooltip>
+            </xs:appinfo>
+          </xs:annotation>
+          <xs:complexType>
+          <!--DOC-Autobuild-code-->
+	  <xs:annotation>
+	    <xs:appinfo>
+	      <docid>Th.t4</docid>
+            </xs:appinfo>
+          </xs:annotation>
+          <xs:attribute name="AutoSwapNode" type="xs:boolean" default="false">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>Failing nodes will be automatically swapped for spare nodes</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="SwapNodeCheckPrimaryDrive" type="xs:boolean" use="optional" default="true">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>Primary drive is checked for read/write</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="SwapNodeCheckMirrorDrive" type="xs:boolean" use="optional" default="true">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>Mirror drive is checked for read/write</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="SwapNodeMaxConcurrent" type="xs:nonNegativeInteger" use="optional" default="1">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>Maximum number of concurrent automatic swaps (within the swap interval)</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="SwapNodeInterval" type="xs:nonNegativeInteger" use="optional" default="24">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>Interval (in hours) for maximum concurrent swaps</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="SwapNodeRestartJob" type="xs:boolean" use="optional" default="false">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>Restart job that failed prior to swap</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="CheckAfterEveryJob" type="xs:boolean" use="optional" default="false">
+            <xs:annotation>
+              <xs:appinfo>
+                <tooltip>Check nodes after every job (if false, only check after failed jobs)</tooltip>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Storage">
+          <xs:annotation>
+            <xs:appinfo>
+              <title>Backup</title>
+              <tooltip>Options for mirroring thor data</tooltip>
+            </xs:appinfo>
+          </xs:annotation>
+          <xs:complexType>
+          <!--DOC-Autobuild-code-->
+	   <xs:annotation>
+	      <xs:appinfo>
+	  	<docid>Th.t5</docid>
+              </xs:appinfo>
+           </xs:annotation>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Notes" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:appinfo>
+              <viewChildNodes>true</viewChildNodes>
+            </xs:appinfo>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Note" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute name="severity" use="optional" default="Minor">
+              <xs:annotation>
+                <xs:appinfo>
+                  <tooltip>Significance of this note.</tooltip>
+                  <title>Severity</title>
+                  <colIndex>1</colIndex>
+                </xs:appinfo>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="Minor"/>
+                  <xs:enumeration value="Normal"/>
+                  <xs:enumeration value="Critical"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="date" type="AutoTimeStampType" use="optional">
+              <xs:annotation>
+                <xs:appinfo>
+                  <title>Date / Time</title>
+                  <tooltip>Date and time this note was entered</tooltip>
+                  <viewType>readonly</viewType>
+                  <width>120</width>
+                  <colIndex>2</colIndex>
+                </xs:appinfo>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="computer" type="AutoComputerType" use="optional">
+              <xs:annotation>
+                <xs:appinfo>
+                  <title>Computer</title>
+                  <tooltip>Computer from which this note was entered</tooltip>
+                  <viewType>readonly</viewType>
+                  <colIndex>3</colIndex>
+                </xs:appinfo>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="user" type="AutoUseridType" use="optional">
+              <xs:annotation>
+                <xs:appinfo>
+                  <title>User</title>
+                  <tooltip>User account from which this note was entered</tooltip>
+                  <viewType>readonly</viewType>
+                  <colIndex>4</colIndex>
+                </xs:appinfo>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+      <xs:attribute name="build" type="buildType" use="required">
+        <xs:annotation>
+          <xs:appinfo>
+           <tooltip>The build name to be deployed</tooltip>
+           <viewType>hidden</viewType>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="buildSet" type="buildSetType" use="required">
+        <xs:annotation>
+          <xs:appinfo>
+            <viewType>hidden</viewType>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Name for this process</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="description" type="xs:string" default="Thor process">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Description for this process</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      @XSD_PLUGIN_DEFINITION@
+      <xs:attribute name="daliServers" type="daliServersType" use="required">
+        <xs:annotation>
+          <xs:appinfo>
+            <autogenforwizard>1</autogenforwizard>            
+            <tooltip>Specifies the dali server to which this thor is attached.</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="externalProgDir" type="absolutePath" use="optional">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>If specified, external programs executed via PIPE will be started in the named directory</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="masterMemorySize" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Memory (in MB) to use for rows on thor master. It will default to globalMemorySize if unset</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="fileCacheLimit" type="xs:nonNegativeInteger" default="1800">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>File Cache limit (in MB). It will default to 1800 if unset</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="globalMemorySize" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Memory (in MB) to use for rows per Thor slave process. If unset, default = [75% of physical memory] / slavesPerNode</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="memorySpillAt" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Threshold that the memory manager should start requesting memory to be freed (percentage)</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="heapUseHugePages" type="xs:boolean" default="false">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Allow Thor master and slave to use memory from huge pages if they have been configured.</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="heapMasterUseHugePages" type="xs:boolean" use="optional">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Allow heapUseHugePages to be overridden for the master.  Useful to disable if running on a single machine.</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="heapUseTransparentHugePages" type="xs:boolean" default="true">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Allow Thor master and slave to use memory from transparent huge pages.</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="heapRetainMemory" type="xs:boolean" default="false">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Retain and do not return unused memory to the operating system.</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="pluginsPath" type="relativePath" default="${PLUGINS_PATH}/"/>
+      <xs:attribute name="nodeGroup" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Name of a node group running Thor slaves. (if omitted uses same name as Thor)</tooltip>
+            <autogenforwizard>1</autogenforwizard>
+            <autogendefaultvalue>$processname</autogendefaultvalue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="defaultOutputNodeGroup" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Default group to output to. Leave blank if output defaults to local cluster.</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="masterport" type="xs:nonNegativeInteger" default="20000">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Base port to use for master</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="slaveport" type="xs:nonNegativeInteger" default="20100">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Base port to use for slaves</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="localThor" type="xs:boolean" default="false">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Assume all slaves are local to this machine rather than started via agent</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="slavesPerNode" type="xs:nonNegativeInteger" default="1">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Defines how many slave processes there are on each node</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="channelsPerSlave" type="xs:nonNegativeInteger" default="1">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Defines how many slave channels per slave process</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="localThorPortInc" type="xs:nonNegativeInteger" default="20">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Port increment between slaves on same node</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="multiThorMemoryThreshold" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Memory usage (in MB) beneath which multiple Thors will run in parallel. Leave blank if no limit.</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="multiThorPriorityLock" type="xs:boolean" use="optional" default="false">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>If set true, prevents lower priority jobs starting on a multithor</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="multiThorExclusionLockName" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Prevents other thors (on any queue) sharing the same multiThorExclusionLockName name from running jobs at the same time</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="replicateOutputs" type="xs:boolean" default="true">
+        <xs:annotation>
+          <xs:appinfo>
+            <autogenforwizard>1</autogenforwizard>
+            <autogendefaultvalue>false</autogendefaultvalue>
+            <autogendefaultformultinode>true</autogendefaultformultinode>
+            <tooltip>Replicate output files</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="replicateAsync" type="xs:boolean" default="true">
+        <xs:annotation>
+          <xs:appinfo>
+            <autogenforwizard>1</autogenforwizard>
+            <autogendefaultvalue>false</autogendefaultvalue>
+            <autogendefaultformultinode>true</autogendefaultformultinode>
+            <tooltip>Perform output replication in the background, allowing thor to process next task</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="autoCopyBackup" type="xs:boolean" default="false">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>If files at primary location are missing, copy into place from backup location</tooltip>
+            <autogenforwizard>1</autogenforwizard>
+            <autogendefaultvalue>false</autogendefaultvalue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="checkPointRecovery" type="xs:boolean" use="optional" default="false">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Enable support for continuing failed workunits from point of failure</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="watchdogEnabled" type="xs:boolean" default="true">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Enable/disable watchdog process (periodically checking slaves are still alive)</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="watchdogProgressEnabled" type="xs:boolean" default="true">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Enable/Disable graph progress reporting in watchdog process</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="watchdogProgressInterval" type="xs:nonNegativeInteger" use="optional" default="30">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Graph progress reporting interval (seconds)</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="slaveDownTimeout" type="xs:nonNegativeInteger" use="optional" default="300">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>A slave will be marked down after the specified elapsed time period (seconds)</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="verifyDaliConnectionInterval" type="xs:nonNegativeInteger" use="optional" default="300">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Interval between verification of thor to dali connection (seconds)</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="idleRestartPeriod" type="xs:nonNegativeInteger" use="optional" default="480">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Period of idle time after which to initiate an auto restart (minutes)</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="smallSortThreshold" type="xs:nonNegativeInteger" use="optional" default="1024">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Sort size threshold for thor global sorting on multiple nodes (MB)</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="maxActivityCores" type="xs:nonNegativeInteger" use="optional" default="0">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Maximum number of cores to use per activity (only currently used by sorting activities). Default equals all available</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="monitorDaliFileServer" type="xs:boolean" default="true">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Warn if dafilesrv process is not running on computers</tooltip>
+            <autogenforwizard>1</autogenforwizard>
+            <autogendefaultvalue>true</autogendefaultvalue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="allowedPipePrograms" type="xs:string" use="optional" default="*">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Comma separated list of allowed PIPE program (* for allow all)</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="compressInternalSpills" type="xs:boolean" default="true">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Compress internal writes to disk when spilling</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="affinity" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>A comma separated list of cpu ids (and ranges) to bind all thor slaves to</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="autoAffinity" type="xs:boolean" default="true">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Automatically bind slave processes to a single cpu socket, if multiple slaves are running on a multi socket machine</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="numaBindLocal" type="xs:boolean" default="false">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>Restrict allocations to memory attached to the cpu sockets the slave process is bound to</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="httpCallerIdHeader" type="xs:string" use="optional" default="HPCC-Caller-Id">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>HTTP Header field to use for sending and receiving CallerId</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="httpGlobalIdHeader" type="xs:string" use="optional" default="HPCC-Global-Id">
+        <xs:annotation>
+          <xs:appinfo>
+            <tooltip>HTTP Header field to use for sending and receiving GlobalId</tooltip>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+    <xs:key name="thorProcessKey1">
+      <xs:selector xpath="./ThorMasterProcess|./ThorSlaveProcess"/>
+      <xs:field xpath="@name"/>
+    </xs:key>
+  </xs:element>
+</xs:schema>

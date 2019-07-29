@@ -1,0 +1,59 @@
+#! /usr/bin/perl
+
+################################################################################
+#
+#   HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems(R).
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#################################################################################
+
+
+use strict;
+use warnings;
+use Config::Simple qw();
+use SOAP::Lite qw();
+use Data::Dumper;
+
+my ($proxypath, $myname);
+
+BEGIN
+{
+    my $cfgfile = 'soapclient.ini';
+    my $cfg = new Config::Simple();
+    $cfg->read($cfgfile) or die("Could not read config file $cfgfile: $!");
+    $proxypath = $cfg->param('proxypath') or die("No proxypath in config file $cfgfile");
+    $myname = $cfg->param('myname') or die("No myname in config file $cfgfile");
+}
+
+my @proxies = qw(log dispatch);
+my $usage = 'usage: soapclient ' . join('|', @proxies);
+die($usage) unless(@ARGV == 1);
+my ($proxyname) = @ARGV;
+die($usage) unless(grep({$proxyname eq $_} @proxies));
+
+my $serviceuri = 'urn:TestSOAP/TestService';
+my $proxyurl = $proxypath . 'soap' . $proxyname . '.cgi';
+my $soap = SOAP::Lite->uri($serviceuri)->proxy($proxyurl);
+
+my $arg = SOAP::Data->name('name')->type('string')->value($myname);
+my $resp = $soap->greeting($arg);
+
+if($resp->fault())
+{
+    print('SOAP returned error ', $resp->faultcode(), ': ', $resp->faultstring(), "\n", $resp->faultdetail(), "\n");
+}
+else
+{
+    print("SOAP returned OK\n");
+    print(Data::Dumper->Dump([$resp->method()], ['SOAP_response']));
+}

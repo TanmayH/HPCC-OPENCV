@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sect1 PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<sect1 id="EndsWith">
+  <title>EndsWith</title>
+
+  <para><emphasis role="bold">STD.Str.EndsWith<indexterm>
+      <primary>STD.Str.EndsWith</primary>
+    </indexterm><indexterm>
+      <primary>Str.EndsWith</primary>
+    </indexterm><indexterm>
+      <primary>EndsWith</primary>
+    </indexterm>(</emphasis> <emphasis>src, suffix</emphasis> <emphasis
+  role="bold">)</emphasis></para>
+
+  <para><emphasis role="bold">STD.Uni.EndsWith<indexterm>
+      <primary>STD.Uni.EndsWith</primary>
+    </indexterm><indexterm>
+      <primary>Uni.EndsWith</primary>
+    </indexterm>(</emphasis> <emphasis>src, suffix, form</emphasis> <emphasis
+  role="bold">)</emphasis></para>
+
+  <informaltable colsep="1" frame="all" rowsep="1">
+    <tgroup cols="2">
+      <colspec colwidth="80.50pt" />
+
+      <colspec />
+
+      <tbody>
+        <row>
+          <entry><emphasis>src</emphasis></entry>
+
+          <entry>The string to search.</entry>
+        </row>
+
+        <row>
+          <entry><emphasis>suffix</emphasis></entry>
+
+          <entry>The string to find.</entry>
+        </row>
+
+        <row>
+          <entry><emphasis>form</emphasis></entry>
+
+          <entry>The type of Unicode normalization to be employed. (NFC, NFD,
+          NFKC, or NFKD)</entry>
+        </row>
+
+        <row>
+          <entry>Return:<emphasis> </emphasis></entry>
+
+          <entry>EndsWith returns a BOOLEAN value.</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+
+  <para>The <emphasis role="bold">EndsWith</emphasis> function returns TRUE if
+  the <emphasis>src</emphasis> ends with the text in the
+  <emphasis>suffix</emphasis> parameter.</para>
+
+  <para>Trailing and Leading spaces are stripped from the suffix before
+  matching.</para>
+
+  <para>For the Unicode version, unless specified, normalization will not
+  occur. Unless initiated as hex and then converted to Unicode using TRANSFER,
+  ECL will perform its own normalization on your declared Unicode
+  string.</para>
+
+  <para></para>
+
+  <para>Example:</para>
+
+  <programlisting format="linespecific">IMPORT STD;
+STD.STr.EndsWith('a word away','away');   //returns TRUE
+STD.STr.EndsWith('a word a way','away');  //returns FALSE
+</programlisting>
+</sect1>

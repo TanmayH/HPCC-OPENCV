@@ -1,0 +1,54 @@
+<!--
+##############################################################################
+#    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems®.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+##############################################################################
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fo="http://www.w3.org/1999/XSL/Format" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Add User</title>
+            <script language="JavaScript1.2">
+                function checkfields(f)
+                {
+                    if(f.username.value != '' && f.password1.value != '' && f.password2.value != '')
+                    {
+                        f.S1.disabled=false;
+                    }
+                    else
+                    {
+                            f.S1.disabled=true;
+                    }
+                }
+            </script>
+</head>
+<body><form xmlns="" method="POST" action="/ws_access/AddUser"/>
+<table xmlns="" name="table1">
+<tr>
+<th colspan="2">
+<h3>Add User</h3>
+</th>
+</tr>
+        <tr><td><b>User ID: </b></td><td><input type="text" name="username" size="20" onKeyPress="checkfields(this.form)"/></td></tr>
+        <tr><td><b>First Name: </b></td><td><input type="text" name="firstname" size="20" value="" onKeyPress="checkfields(this.form)" onChange="checkfields(this.form)"/></td></tr>
+        <tr><td><b>Last Name: </b></td><td><input type="text" name="lastname" size="20" value="" onKeyPress="checkfields(this.form)"/></td></tr>
+        <tr><td><b>Password: </b></td><td><input type="password" name="password1" size="20" value="" onKeyPress="checkfields(this.form)" onChange="checkfields(this.form)"/></td></tr>
+        <tr><td><b>Retype password: </b></td><td><input type="password" name="password2" size="20" value="" onKeyPress="checkfields(this.form)" onChange="checkfields(this.form)"/></td></tr>
+        <tr><td></td><td><input type="submit" value="Submit" disabled="form.username.value=''" name="S1" /> &nbsp; <input type="reset" value="Clear"  onClick="S1.disabled='true'"/> </td>
+</TABLE>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+/*##############################################################################
+
+    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems®.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+############################################################################## */
+
+#ifndef XSLPROCESSOR_HPP_INCL
+#define XSLPROCESSOR_HPP_INCL
+#include "jliball.hpp"
+
+#include "xmllib.hpp"
+
+class StringBuffer;
+
+#define SEISINT_XSLTEXT_NAMESPACE "http://seisint.com"
+
+interface XMLLIB_API IIncludeHandler : public IInterface
+{
+public:
+    virtual bool getInclude(const char* includename, MemoryBuffer& includebuf, bool& pathOnly) = 0;
+};
+
+
+interface XMLLIB_API IXslFunction : public IInterface
+{
+public:
+   virtual const char* getName() const = 0;
+   virtual bool isAssigned ()  = 0;
+   virtual void setAssigned(bool bAssigned)  = 0;
+};
+
+//The transform component is used to setup, and maintain any state associated with a transform
+//
+interface XMLLIB_API IXslTransform : public IInterface
+{
+public:
+    // setXmlSource - specifies the source of the XML to process
+    //
+    virtual int setXmlSource(const char *pszFileName) = 0;
+    virtual int setXmlSource(const char *pszBuffer, unsigned int nSize) = 0;
+ 
+    // setXslSource - specifies the source of the XSLT "script" to use
+    //
+    virtual int setXslSource(const char *pszBuffer, unsigned int nSize, const char *cacheId, const char *rootpath) = 0;
+    virtual int setXslNoCache(const char *pszBuffer, unsigned int nSize, const char *rootpath=NULL) = 0;
+    virtual int loadXslFromFile(const char *pszFileName, const char *altCacheId=NULL) = 0;
+    virtual int loadXslFromEmbedded(const char *path, const char *cacheId) = 0;
+
+    // setResultTarget - Specifies where the post transform data is to be placed
+    // must be set before calling parameterless variety of transform
+    virtual int setResultTarget(const char *pszFileName) = 0; 
+    virtual int setResultTarget(char *pszBuffer, unsigned int nSize) = 0;
+    virtual int closeResultTarget() = 0;
+ 
+    // setParameter - for adding value pair parameters
+    //    szExpression == "" is empty parameter
+    //    szExpression == NULL removes any existing parameter with the given name
+    //
+    virtual int setParameter(const char *pszName, const char *pszExpression) = 0;
+    virtual void copyParameters(IProperties *params) = 0;
+
+    virtual int setStringParameter(const char *pszName, const char* pszString) = 0;
+
+    //In XalanTransformer, m_paramPairs are cleaned after each doTransform, so this function is really not necessary.
+    //virtual int removeAllParameters () = 0;
+
+    // transform - for doing it
+    virtual int transform() = 0;
+    virtual int transform(StringBuffer &target) = 0;
+    virtual int transform(ISocket* targetSocket) = 0;
+
+    // Set include source
+    virtual int setIncludeHandler(IIncludeHandler* handler) = 0;
+
+    // createExternalFunction - create a simple external function that processes text (a convenient way to define external functions)
+    // 
+    virtual IXslFunction* createExternalFunction( const char* pszNameSpace, void (*fn)(StringBuffer& out, const char* pszIn, IXslTransform*)) = 0;
+
+    // setExternalFunction - add an external function that can be called from within the XSLT
+    //
+    virtual int setExternalFunction( const char* pszNameSpace, IXslFunction*, bool set) = 0;
+
+    // getLastError - returns the error, if any, in last transformation, compiling stylesheet or parsing source
+    //
+    virtual const char* getLastError() const = 0;
+
+    // getMessages - returns the messages produced, if any, in last transformation, compiling stylesheet or parsing source
+    // The most useful application is to fetch any <xsl:message/> as a result of transformation.
+    // Note: in case of any errors, any cumulative messages until the error are bundled with the
+    // message.
+    //
+    virtual const char* getMessages() const = 0;
+
+    //Allow the caller to set necessary info that can be used to identify it.
+    //This is typically useful in [static] external functions, which can use 
+    //this info to work with caller/context.
+    //
+    virtual void setUserData(void*) = 0;
+    virtual void* getUserData() const = 0;
+};
+
+interface XMLLIB_API IXslProcessor : public IInterface
+{
+    virtual IXslTransform *createXslTransform(IPropertyTree *cfg = nullptr) = 0;
+ 
+    // execute - runs the transformation placing the results in the specified output location
+    //
+    virtual int execute(IXslTransform *pITransform) = 0;
+
+    virtual int setDefIncludeHandler(IIncludeHandler* handler)=0;
+
+    virtual void setCacheTimeout(int timeout) = 0;
+
+    virtual int getCacheTimeout() = 0;
+};
+
+extern "C" XMLLIB_API IXslProcessor* getXslProcessor();
+
+#endif

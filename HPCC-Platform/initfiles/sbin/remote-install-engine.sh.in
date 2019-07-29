@@ -1,0 +1,211 @@
+#!/bin/bash
+################################################################################
+#    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems®.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+################################################################################
+#
+# Usage: remote-install-engine.sh
+#
+# This script is used as a remote engine for a cluster installation.
+#
+# Flow:
+#
+# 1. SSH Keys Generated.
+# 2. Script copied to node.
+# 3. Install package copied to node.
+# 4. SSH Keys copied to node.
+# 5. Run CheckInstall to determine if  package is installed.
+# 6. Install/Upgrade if needed.
+# 7. Run CheckKeys to determine if sshkeys are installed.
+# 8. Install keys if different then installed or no keys installed.
+# 9. Return.
+#
+
+###<REPLACE>###
+
+REMOTE_INSTALL="/tmp/remote_install"
+CURR="${REMOTE_INSTALL}/curr_keys"
+NEW="${REMOTE_INSTALL}/new_keys"
+MD5="${REMOTE_INSTALL}/md5"
+
+print_usage(){
+    echo "usage: remote-install-engine.sh <package file>";
+    exit 1;
+}
+
+checkUser(){
+    USER=$1
+    id ${USER} 2>&1 > /dev/null
+    if [ $? -eq 0 ];
+    then
+        return 1
+    else
+        return 0
+    fi
+}
+
+
+pkgCmd(){
+    if [ "$1" == "deb" ]; then
+        PKGCMD="dpkg -i $PKG &> $outputFile; apt-get install -f -y &> $outputFile;"
+    elif [ "$1" == "rpm" ]; then
+        if [ "$2" == "install" ] || [[ "$2" != "reinstall" ]]; then
+            PKGCMD="yum install --nogpgcheck -y $PKG &> $outputFile"
+        elif [ "$2" == "reinstall" ]; then
+            PKGCMD="yum reinstall --nogpgcheck -y $PKG &> $outputFile"
+        fi
+    else
+        echo "BAD Package type."
+        exit 1
+    fi
+}
+
+checkInstall(){
+    _FILE=`ls ${INSTALL_DIR}${CONFIG_DIR}/version 2>&1 1>/dev/null; echo $?`
+    checkUser "hpcc"
+    _USER=$?
+    if [ "${_FILE}" == 0 ] && [ ${_USER} -eq 1 ]; then
+        _INSTALLED=1
+        checkReinstall
+    else
+        _INSTALLED=0
+    fi
+}
+
+checkReinstall(){
+  if [ "${OSPKG}" == "rpm" ]; then
+    local current=$( yum info hpccsystems-platform | grep "^Release" | awk '{print $3}' )
+    local new=$( rpm -qp --info ${PKG} | grep "^Release" | awk '{print $3}' )
+    if [[ $current == $new ]]; then
+      _REINSTALL=1
+    else
+      _REINSTALL=0
+    fi
+  fi
+}
+
+installPkg(){
+    checkInstall
+    if [ "${_INSTALLED}" == "0" ]; then
+        pkgCmd $OSPKG "install"
+    elif [ "${_REINSTALL}" == "1" ]; then
+        pkgCmd $OSPKG "reinstall"
+    fi
+    eval $PKGCMD
+    if [ $? -ne 0 ]; then
+      echo "FAILED on Package Command: ${PKGCMD}"
+      exit 1
+    fi
+}
+
+generateMD5(){
+        if [ -e $2/$3 ]; then
+                /usr/bin/md5sum $2/$3 > $1/$3.md5
+        fi
+}
+
+checkMD5(){
+        if [ -e $1.md5 ] &&  [ -e $2.md5 ]; then
+                _K1=`cat $1.md5 | awk '{print $1}'`
+                _K2=`cat $2.md5 | awk '{print $1}'`
+                if [ "${_K1}" == "${_K2}" ]; then
+                        KM="1"
+                else
+                        KM="0"
+                fi
+        fi
+}
+
+checkKeys(){
+        CNT=0
+        if [ -e ~hpcc/.ssh/$1 ] && [ -e ~hpcc/.ssh/$1.pub ]; then
+                mkdir -p ${MD5}
+                mkdir -p ${CURR}
+                cp ~hpcc/.ssh/$1 ${CURR}/${1}-inst
+                cp ~hpcc/.ssh/$1.pub ${CURR}/${1}-inst.pub
+                generateMD5 ${MD5} ${CURR} ${1}-inst
+                generateMD5 ${MD5} ${CURR} ${1}-inst.pub
+                if [ -e ${NEW}/$1 ]; then
+                        generateMD5 ${MD5} ${NEW} ${1}
+                        generateMD5 ${MD5} ${NEW} ${1}.pub
+                fi
+                checkMD5 ${MD5}/$1 ${MD5}/${1}-inst
+                if [ "$KM" == "0" ]; then
+                        CNT=1
+                fi
+                checkMD5 ${MD5}/$1.pub ${MD5}/${1}-inst.pub
+                if [ "$KM" == "0" ]; then
+                        CNT=1
+                fi
+                rm -rf ${MD5}
+                rm -rf ${CURR}
+        else
+                CNT=1
+        fi
+        if [ "$CNT" == "1" ]; then
+                installKeys ${NEW} $1
+        fi
+}
+
+installKeys(){
+    mkdir -p  ~hpcc/.ssh
+    rm -f ~hpcc/.ssh/authorized_keys
+    /bin/cp $1/$2 ~hpcc/.ssh/$2
+    /bin/cp $1/$2.pub ~hpcc/.ssh/$2.pub
+    /bin/cp $1/$2.pub ~hpcc/.ssh/authorized_keys
+    chown -R hpcc:hpcc ~hpcc/.ssh
+    chmod 700 ~hpcc/.ssh
+    chmod 600 ~hpcc/.ssh/$2
+    chmod 644 ~hpcc/.ssh/$2.pub
+    chmod 644 ~hpcc/.ssh/authorized_keys
+}
+
+if [ $# -eq 0 ]; then
+    print_usage
+fi
+
+PKG=$1
+outputFile="${REMOTE_INSTALL}/remote-install.log"
+if [ -e ${outputFile} ]; then
+    rm -rf ${outputFile}
+fi
+
+pkgtype=`echo "$PKG" | grep -i rpm`
+if [ -z $pkgtype ]; then
+    OSPKG="deb"
+else
+    OSPKG="rpm"
+    WITH_PLUGINS=0
+    basename $PKG | grep -i with-plugins
+    [ $? -eq 0 ] && WITH_PLUGINS=1
+fi
+
+
+
+installPkg
+checkUser "hpcc"
+_USER=$?
+if [ ${_USER} -eq 1 ]; then
+    checkKeys id_rsa
+    if [ -e ${REMOTE_INSTALL}/${ENV_XML_FILE} ]; then
+        cp -r ${REMOTE_INSTALL}/${ENV_XML_FILE}  ${CONFIG_DIR}/${ENV_XML_FILE}
+        chown hpcc:hpcc ${CONFIG_DIR}/${ENV_XML_FILE}
+    fi
+    if [ -e ${REMOTE_INSTALL}/${ENV_CONF_FILE} ]; then
+        cp -r ${REMOTE_INSTALL}/${ENV_CONF_FILE}  ${CONFIG_DIR}/${ENV_CONF_FILE}
+	chown hpcc:hpcc ${CONFIG_DIR}/${ENV_CONF_FILE}
+    fi
+fi
+rm -rf ${REMOTE_INSTALL}
+exit 0

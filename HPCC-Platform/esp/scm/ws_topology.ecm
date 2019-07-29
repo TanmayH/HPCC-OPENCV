@@ -1,0 +1,664 @@
+/*##############################################################################
+
+    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems®.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+############################################################################## */
+
+////////////////////////////////////////////////////////////
+
+//  ===========================================================================
+
+ESPStruct TpMachine
+{
+    string Name;
+    string Netaddress;
+    [min_ver("1.09")] string ConfigNetaddress;
+    string Domain;
+    string Directory;
+    string Type;
+    string Available;
+    int    OS;
+    string Path;
+    int    Port;
+    [min_ver("1.18")] int    ProcessNumber;
+};
+
+//  ===========================================================================
+ESPStruct TpCluster
+{
+    string Type;
+    string Name;
+    [min_ver("1.03")] string QueueName;
+    string Build;
+    string Directory;
+    string LogDirectory;
+    string Desc;
+    [max_ver("1.16")] string Prefix;
+    string Path;
+    string DataModel;
+    int    OS;
+    [min_ver("1.15")] bool   HasThorSpareProcess;
+    [min_ver("1.12")] ESParray<ESPstruct TpMachine> TpMachines;
+};
+//  ===========================================================================
+
+//  ===========================================================================
+ESPStruct TpLogicalCluster
+{
+    string Name;
+    string Queue;
+        [min_ver("1.14")] string LanguageVersion;
+    [min_ver("1.11")] string Process;
+    [min_ver("1.22")] string Type;
+};
+//  ===========================================================================
+
+//  ===========================================================================
+
+ESPStruct [nil_remove] TpGroup
+{
+    string Name;
+    [min_ver("1.21")] string Kind;
+    [min_ver("1.21")] bool ReplicateOutputs;
+};
+
+//  ===========================================================================
+ESPStruct TpDali        
+{
+    string Name;
+    string Description;
+    string Build;
+    string BackupComputer;
+    string BackupDirectory;
+    string Type;
+    string Path;
+    string LogDirectory;
+    [min_ver("1.27")] string AuditLogDirectory;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+//  ===========================================================================
+ESPStruct TpEclServer   
+{
+    string Name;
+    string Description;
+    string Build;
+    string LogDirectory;
+    string Type;
+    string Path;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+//  ===========================================================================
+ESPStruct TpEclAgent    
+{
+    string Name;
+    string Description;
+    string Build;
+    string Type;
+    string Path;
+    string DaliServer;
+    string LogDir;
+    ESParray<ESPstruct TpMachine> TpMachines;
+    //ESPstruct TpAgentExec AgentExec;
+};
+//  ===========================================================================
+ESPStruct TpAgentExec
+{
+    string DaliServer;
+    string LogDir;
+
+};
+//  ===========================================================================
+ESPStruct TpEclScheduler    
+{
+    string Name;
+    string Description;
+    string Build;
+    string LogDirectory;
+    string Type;
+    string Path;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+//  ===========================================================================
+ESPStruct [nil_remove] TpBinding
+{
+    string Name;
+    string Service;
+    string ServiceType;
+    [min_ver("1.23")] string BindingType;
+    [min_ver("1.24")] string ServiceBuildSet;
+    string Port;
+    string Protocol;
+
+};
+
+ESPStruct TpEspServicePlugin
+{
+    string ShortName;
+    string LongName;
+    string FolderName;
+    string WidgetName;
+};
+
+//  ===========================================================================
+ESPStruct TpEspServer
+{
+    string Name;
+    string Description;
+    string Build;
+    string Type;
+    string Path;
+    string LogDirectory;
+    ESParray<ESPstruct TpMachine> TpMachines;
+    ESParray<ESPstruct TpBinding> TpBindings;
+
+};
+//  ===========================================================================
+ESPStruct TpDfuServer
+{
+    string Name;
+    string Description;
+    string Build;
+    string Queue;
+    string Type;
+    string Path;
+    string LogDirectory;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+//  ===========================================================================
+ESPStruct TpSashaServer
+{
+    string Name;
+    string Description;
+    string Build;
+    string Path;
+    string LogDirectory;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+//  ===========================================================================
+ESPStruct TpLdapServer
+{
+    string Name;
+    string Description;
+    string Build;
+    string Path;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+//  ===========================================================================
+ESPStruct TpDropZone
+{
+    string Name;
+    string Description;
+    string Build;
+    string Path;
+    [min_ver("1.26")]bool ECLWatchVisible;
+    [min_ver("1.26")]string UMask;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+//  ===========================================================================
+ESPStruct TpMySqlServer
+{
+    string Name;
+    string Description;
+    string Build;
+    string Path;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+//  ===========================================================================
+ESPStruct TpFTSlave
+{
+    string Name;
+    string Description;
+    string Build;
+    string Path;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+//  ===========================================================================
+ESPStruct TpDkcSlave
+{
+    string Name;
+    string Description;
+    string Build;
+    string Path;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+//  ===========================================================================
+ESPStruct TpGenesisServer
+{
+    string Name;
+    string Description;
+    string Build;
+    string Path;
+    ESParray<ESPstruct TpMachine> TpMachines;
+
+};
+
+//  ===========================================================================
+ESPStruct TpSparkThor
+{
+    string Name;
+    string Build;
+    string ThorClusterName;
+    string ThorPath;
+    unsigned SparkExecutorCores;
+    int64 SparkExecutorMemory;
+    unsigned SparkMasterPort;
+    unsigned SparkMasterWebUIPort;
+    unsigned SparkWorkerCores;
+    int64 SparkWorkerMemory;
+    unsigned SparkWorkerPort;
+    string LogDirectory;
+    string Path;
+    ESParray<ESPstruct TpMachine> TpMachines;
+};
+
+//  ===========================================================================
+ESPStruct TpQueue
+{
+    string Name;
+    string WorkUnit;
+};
+
+//  ===========================================================================
+
+ESPStruct TpServices
+{
+    ESParray<ESPstruct TpDali>        TpDalis;
+    ESParray<ESPstruct TpDfuServer>   TpDfuServers;
+    ESParray<ESPstruct TpDkcSlave>    TpDkcSlaves;
+    ESParray<ESPstruct TpDropZone>    TpDropZones;
+    ESParray<ESPstruct TpEclAgent>    TpEclAgents;
+    ESParray<ESPstruct TpEclServer>   TpEclServers;
+    ESParray<ESPstruct TpEclServer>   TpEclCCServers;
+    [min_ver("1.16")] ESParray<ESPstruct TpEclScheduler>  TpEclSchedulers;
+    ESParray<ESPstruct TpEspServer>   TpEspServers;
+    ESParray<ESPstruct TpFTSlave>     TpFTSlaves;
+    ESParray<ESPstruct TpGenesisServer> TpGenesisServers;
+    ESParray<ESPstruct TpLdapServer>  TpLdapServers;
+    ESParray<ESPstruct TpMySqlServer> TpMySqlServers;
+    ESParray<ESPstruct TpSashaServer> TpSashaServers;
+    [min_ver("1.28")] ESParray<ESPstruct TpSparkThor>   TpSparkThors;
+};
+
+ESPStruct TpClusterNameType
+{
+    string Name;
+    string Type;
+    bool   IsDefault;
+};
+
+ESPrequest TpListTargetClustersRequest
+{
+};
+
+ESPresponse [exceptions_inline] TpListTargetClustersResponse
+{
+    ESParray<ESPstruct TpClusterNameType>   TargetClusters;
+};
+
+//  ===========================================================================
+ESPStruct TpTargetCluster
+{
+    string Name;
+    string Prefix;
+    TpQueryType Type;
+
+    ESParray<ESPstruct TpCluster>   TpClusters;
+    ESParray<ESPstruct TpEclServer> TpEclCCServers;
+    [min_ver("1.19")] ESParray<ESPstruct TpEclServer> TpEclServers;
+    ESParray<ESPstruct TpEclAgent>  TpEclAgents;
+    [min_ver("1.16")] ESParray<ESPstruct TpEclScheduler>  TpEclSchedulers;
+};
+
+ESPStruct TpQueryType
+{
+    TPCLUSTER;
+    TPNODE;
+};
+ESPrequest TpTargetClusterQueryRequest
+{
+    TpQueryType Type;
+    string Name;
+    bool ShowDetails(false);
+};
+
+ESPresponse [exceptions_inline]TpTargetClusterQueryResponse
+{
+    //bool EncapsulatedSystem;
+    //bool   EnablePreflightInfo;
+    bool   ShowDetails(false);
+    int    MemThreshold;
+    int    DiskThreshold;
+    int    CpuThreshold;
+    string MemThresholdType;
+    string DiskThresholdType;
+    [min_ver("1.13")] string PreflightProcessFilter;
+    [min_ver("1.20")] string AcceptLanguage;
+
+    ESParray<ESPstruct TpTargetCluster> TpTargetClusters;
+};
+
+ESPrequest TpClusterQueryRequest
+{
+    TpQueryType Type;
+};
+
+ESPresponse [exceptions_inline]TpClusterQueryResponse
+{
+    [min_ver("1.08")] bool EnableSNMP;
+    [min_ver("1.20")] string AcceptLanguage;
+    ESParray<ESPstruct TpCluster> TpClusters;
+};
+
+
+ESPrequest TpLogicalClusterQueryRequest
+{
+    string EclServerQueue;
+};
+
+ESPresponse [exceptions_inline] TpLogicalClusterQueryResponse
+{
+    ESParray<ESPstruct TpLogicalCluster> TpLogicalClusters;
+};
+
+
+ESPrequest [nil_remove] TpGroupQueryRequest
+{
+    [min_ver("1.21")] string Kind;
+};
+
+ESPresponse [exceptions_inline] TpGroupQueryResponse
+{
+    ESParray<ESPstruct TpGroup> TpGroups;
+};
+
+
+
+
+
+ESPrequest TpClusterInfoRequest
+{
+    //Type of Node the parent is....
+    string Name;
+};
+
+ESPresponse [exceptions_inline,encode(0)] TpClusterInfoResponse
+{
+    string Name;
+    string WorkUnit;
+    [min_ver("1.10")] ESParray<ESPstruct TpQueue> TpQueues;
+};
+
+
+SCMenum TpMachineType
+{
+    TPMACHINECLUSTER
+};
+ESPrequest [] TpMachineQueryRequest
+{
+    //Type of Node the parent is....
+    TpMachineType Type;
+    string        Cluster;
+    string        OldIP;
+    //Path to Parent within Dali(Encoded to prevent back-engineering)
+    string Path;
+    //installation path for corresponding component for monitoring processes
+    string Directory;
+    string LogDirectory; 
+};
+
+
+ESPresponse [exceptions_inline] TpMachineQueryResponse
+{
+    bool   EnablePreflightInfo;
+    [min_ver("1.15")] bool   HasThorSpareProcess;
+    TpMachineType Type;
+    string        Cluster;
+    string        OldIP;
+    string       LogDirectory;
+    //Path to Parent within Dali(Encoded to prevent back-engineering)
+    //This is echoed back from request and is used for swap node.
+    string Path;
+    int    MemThreshold;
+    int    DiskThreshold;
+    int    CpuThreshold;
+    string MemThresholdType;
+    string DiskThresholdType;
+    [min_ver("1.13")] string PreflightProcessFilter;
+    [min_ver("1.08")] bool EnableSNMP;
+    [min_ver("1.20")] string AcceptLanguage;
+    ESParray<ESPstruct TpMachine> TpMachines;
+};
+
+ESPrequest [] TpMachineInfoRequest
+{
+    string Name;
+    string NetAddress;
+};
+
+
+ESPresponse [exceptions_inline] TpMachineInfoResponse
+{
+    ESPstruct TpMachine MachineInfo;
+};
+
+ESPrequest TpServiceQueryRequest
+{
+    //Path to Parent within Dali(Encoded to prevent back-engineering)
+    string Type;
+};
+ESPresponse [nil_remove, exceptions_inline] TpServiceQueryResponse
+{
+    int    MemThreshold;
+    int    DiskThreshold;
+    int    CpuThreshold;
+    [min_ver("1.07")] bool EncapsulatedSystem;
+    [min_ver("1.08")] bool EnableSNMP;
+    [min_ver("1.13")] string PreflightProcessFilter;
+    [min_ver("1.20")] string AcceptLanguage;
+    string MemThresholdType;
+    string DiskThresholdType;
+    ESPstruct TpServices ServiceList;
+};
+
+
+ESPrequest TpSetMachineStatusRequest
+{
+    string MachinePath;
+    string StatusValue;
+};
+
+
+ESPresponse [exceptions_inline] TpSetMachineStatusResponse
+{
+    bool TpSetMachineStatusResult;
+};
+ESPrequest TpSwapNodeRequest
+{
+    string Cluster;
+    string OldIP;
+    string NewIP;
+};
+
+
+ESPresponse [exceptions_inline] TpSwapNodeResponse
+{
+    bool TpSwapNodeResult;
+};
+
+
+ESPrequest [nil_remove] TpXMLFileRequest
+{
+    string Name;
+};
+
+ESPresponse [exceptions_inline] TpXMLFileResponse
+{
+    [http_content("application/octet-stream")] binary thefile;
+};
+
+
+ESPrequest [nil_remove] TpLogFileRequest
+{
+    string Name;
+    string Type;
+    int LastHours;
+    [min_ver("1.05")] string StartDate;
+    [min_ver("1.05")] string EndDate;
+    [min_ver("1.05")] int FirstRows;
+    [min_ver("1.05")] int LastRows;
+    [min_ver("1.05")] int FilterType(0);
+    [min_ver("1.05")] bool Reversely(false);
+    [min_ver("1.05")] bool Zip(false);
+    [min_ver("1.05")] int PageNumber(0);
+    [min_ver("1.05")] bool LoadData(false);
+};
+
+ESPresponse [exceptions_inline] TpLogFileResponse
+{
+   [min_ver("1.05")] string Name;
+   [min_ver("1.05")] string Type;
+   [min_ver("1.05")] string StartDate;
+   [min_ver("1.05")] string EndDate;
+    [min_ver("1.05")] int LastHours;
+    [min_ver("1.05")] int FirstRows;
+    [min_ver("1.05")] int LastRows;
+    [min_ver("1.05")] bool Reversely;
+    [min_ver("1.05")] bool Zip;
+    [min_ver("1.05")] int FilterType;
+    [min_ver("1.05")] string LogData;
+    [min_ver("1.05")] bool HasDate(true);
+    [min_ver("1.05")] int64 FileSize;
+    [min_ver("1.05")] int64 PageFrom(0);
+    [min_ver("1.05")] int64 PageTo;
+    [min_ver("1.05")] int PageNumber(0);
+    [min_ver("1.05")] int PrevPage(-1);
+    [min_ver("1.05")] int NextPage(-1);
+    [min_ver("1.06")] int TotalPages;
+    [min_ver("1.20")] string AcceptLanguage;
+};
+
+ESPrequest [nil_remove] SystemLogRequest
+{
+    string Name;
+    string Type;
+    int   Zip;
+};
+
+ESPresponse [exceptions_inline] SystemLogResponse
+{
+    [http_content("application/octet-stream")] binary thefile;
+};
+
+SCMenum OS_TYPE
+{
+    OS_WINDOWS, 
+    OS_SOLARIS, 
+    OS_LINUX
+};
+
+ESPrequest TpGetComponentFileRequest
+{
+    string  CompType;
+    string  CompName;
+    string  NetAddress;
+    string  Directory;
+    string  FileType;
+    int     OsType;
+    string  PlainText;
+};
+
+ESPresponse [exceptions_inline] TpGetComponentFileResponse
+{
+    [http_content("application/octet-stream")] binary FileContents;
+};
+
+ESPrequest TpThorStatusRequest
+{
+    string Name;
+};
+
+ESPresponse [exceptions_inline,encode(0)] TpThorStatusResponse
+{
+    string Name;
+    string Queue;
+    string Group;
+    string ThorMasterIPAddress;
+    int Port;
+    string StartTime;
+    string LogFile;
+    string Wuid;
+    string Graph;
+    int SubGraph;
+    int SubGraphDuration;
+    int AutoRefresh;
+};
+
+ESPrequest TpGetServicePluginsRequest
+{
+};
+
+ESPresponse [exceptions_inline,encode(0)] TpGetServicePluginsResponse
+{
+    ESParray<ESPstruct TpEspServicePlugin, Plugin> Plugins;
+};
+
+ESPrequest TpDropZoneQueryRequest
+{
+    string Name;
+    bool ECLWatchVisibleOnly;
+};
+
+ESPresponse [nil_remove, exceptions_inline] TpDropZoneQueryResponse
+{
+    ESParray<ESPstruct TpDropZone>    TpDropZones;
+};
+
+ESPservice [auth_feature("DEFERRED"), noforms, version("1.28"), cache_group("ESPWsTP"), exceptions_inline("./smc_xslt/exceptions.xslt")] WsTopology
+{
+    ESPmethod [cache_seconds(180), cache_global(1), resp_xsl_default("/esp/xslt/targetclusters.xslt")] TpTargetClusterQuery(TpTargetClusterQueryRequest, TpTargetClusterQueryResponse);
+    ESPmethod [cache_seconds(180), cache_global(1), resp_xsl_default("/esp/xslt/topology.xslt")] TpClusterQuery(TpClusterQueryRequest, TpClusterQueryResponse);
+    ESPmethod [cache_seconds(180), cache_global(1)] TpLogicalClusterQuery(TpLogicalClusterQueryRequest, TpLogicalClusterQueryResponse);
+    ESPmethod [cache_seconds(180), cache_global(1)] TpGroupQuery(TpGroupQueryRequest, TpGroupQueryResponse);
+    ESPmethod [cache_seconds(180), cache_global(1), resp_xsl_default("/esp/xslt/machines.xslt")] TpMachineQuery(TpMachineQueryRequest, TpMachineQueryResponse);
+    ESPmethod [cache_seconds(180), cache_global(1), resp_xsl_default("/esp/xslt/cluster_info.xslt")] TpClusterInfo(TpClusterInfoRequest, TpClusterInfoResponse);
+    ESPmethod [cache_seconds(180), cache_global(1), resp_xsl_default("/esp/xslt/thor_status.xslt")] TpThorStatus(TpThorStatusRequest, TpThorStatusResponse);
+
+    ESPmethod [cache_seconds(180), cache_global(1), min_ver("1.26")] TpDropZoneQuery(TpDropZoneQueryRequest, TpDropZoneQueryResponse);
+    ESPmethod [cache_seconds(180), cache_global(1), resp_xsl_default("/esp/xslt/services.xslt")] TpServiceQuery(TpServiceQueryRequest, TpServiceQueryResponse);
+    ESPmethod [clear_cache_group] TpSetMachineStatus(TpSetMachineStatusRequest, TpSetMachineStatusResponse);
+    ESPmethod [clear_cache_group] TpSwapNode(TpSwapNodeRequest, TpSwapNodeResponse);
+    ESPmethod [cache_seconds(180)] TpXMLFile(TpXMLFileRequest, TpXMLFileResponse);
+    ESPmethod [resp_xsl_default("/esp/xslt/tplog.xslt")] TpLogFile(TpLogFileRequest, TpLogFileResponse);
+    ESPmethod [resp_xsl_default("/esp/xslt/tplogdisplay.xslt")] TpLogFileDisplay(TpLogFileRequest, TpLogFileResponse);
+    ESPmethod TpGetComponentFile(TpGetComponentFileRequest, TpGetComponentFileResponse);
+    ESPmethod [cache_seconds(180), cache_global(1)] TpGetServicePlugins(TpGetServicePluginsRequest, TpGetServicePluginsResponse);
+    ESPmethod [cache_seconds(180), cache_global(1)] TpListTargetClusters(TpListTargetClustersRequest, TpListTargetClustersResponse);
+    ESPmethod [cache_seconds(180), cache_global(1), min_ver(1.25)] TpMachineInfo(TpMachineInfoRequest, TpMachineInfoResponse);
+
+    ESPmethod SystemLog(SystemLogRequest, SystemLogResponse);
+};
+
+SCMexportdef(WSWU);
+
+SCMapi(WSWU) IClientWsTopology *createWsTopologyClient();

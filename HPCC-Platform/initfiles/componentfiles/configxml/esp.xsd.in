@@ -1,0 +1,1075 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+################################################################################
+#    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems®.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+################################################################################
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:include schemaLocation="environment.xsd"/>
+    <xs:element name="EspProcess">
+        <xs:complexType>
+            <!--DOC-Autobuild-code-->
+            <xs:annotation>
+                <xs:appinfo>
+                    <docid>ESP.t6</docid>
+                </xs:appinfo>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="EspBinding" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:appinfo>
+                            <title>ESP Service Bindings</title>
+                        </xs:appinfo>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <!--DOC-Autobuild-code-->
+                        <xs:annotation>
+                            <xs:appinfo>
+                                <docid>ESP.t3</docid>
+                            </xs:appinfo>
+                        </xs:annotation>
+                        <xs:sequence>
+                            <xs:element name="CustomBindingParameter" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:appinfo>
+                                        <viewType>list</viewType>
+                                        <title>Custom Binding Parameters</title>
+                                    </xs:appinfo>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:attribute name="key" type="xs:string" use="optional">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <colIndex>1</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="value" type="xs:string" use="optional">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <colIndex>2</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="Authenticate" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:appinfo>
+                                        <viewType>list</viewType>
+                                        <title>URL Authentication</title>
+                                    </xs:appinfo>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <!--DOC-Autobuild-code-->
+                                    <xs:annotation>
+                                        <xs:appinfo>
+                                            <docid>ESP.t1</docid>
+                                        </xs:appinfo>
+                                    </xs:annotation>
+                                    <xs:attribute name="description" type="xs:string" use="optional">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <width>200</width>
+                                                <colIndex>1</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="path" type="xs:string" use="optional" default="/">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <tooltip>The logical path of a resource used for authentication.</tooltip>
+                                                <required>true</required>
+                                                <colIndex>2</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="resource" type="xs:string" use="required">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <tooltip>The physical resource for which access is checked.</tooltip>
+                                                <width>120</width>
+                                                <colIndex>3</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="access" use="optional" default="Read">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <tooltip>The access level required to the sepcified resource.</tooltip>
+                                                <colIndex>4</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:enumeration value=""/>
+                                                <xs:enumeration value="Access"/>
+                                                <xs:enumeration value="Read"/>
+                                                <xs:enumeration value="Write"/>
+                                                <xs:enumeration value="Full"/>
+                                                <xs:enumeration value="None"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="AuthenticateFeature" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:appinfo>
+                                        <viewType>list</viewType>
+                                        <title>Feature Authentication</title>
+                                    </xs:appinfo>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <!--DOC-Autobuild-code-->
+                                    <xs:annotation>
+                                        <xs:appinfo>
+                                            <docid>ESP.t2</docid>
+                                        </xs:appinfo>
+                                    </xs:annotation>
+                                    <xs:attribute name="authenticate" use="optional" default="Yes">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <tooltip>Validate access rights for this capability?</tooltip>
+                                                <width>80</width>
+                                                <colIndex>1</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:enumeration value="Yes"/>
+                                                <xs:enumeration value="No"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="description" type="xs:string" use="optional">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <width>200</width>
+                                                <colIndex>2</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="path" type="xs:string" use="optional" default="/">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <tooltip>The logical path of a resource used for authentication.</tooltip>
+                                                <required>true</required>
+                                                <colIndex>3</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="resource" type="xs:string" use="required">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <tooltip>The physical resource for which access is checked.</tooltip>
+                                                <width>120</width>
+                                                <colIndex>4</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="AuthenticateSetting" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:appinfo>
+                                        <viewType>list</viewType>
+                                        <title>Secure User Settings</title>
+                                    </xs:appinfo>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <!--DOC-Autobuild-code-->
+                                    <xs:annotation>
+                                        <xs:appinfo>
+                                            <docid>ESP.t8</docid>
+                                        </xs:appinfo>
+                                    </xs:annotation>
+                                    <xs:attribute name="include" use="optional" default="Yes">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <tooltip>Lookup this user setting for authenticated users?</tooltip>
+                                                <width>80</width>
+                                                <colIndex>1</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:enumeration value="Yes"/>
+                                                <xs:enumeration value="No"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="description" type="xs:string" use="optional">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <width>200</width>
+                                                <colIndex>2</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="path" type="xs:string" use="optional" default="/">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <tooltip>The logical path of a resource used to identify user configuration information.</tooltip>
+                                                <required>true</required>
+                                                <colIndex>3</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="resource" type="xs:string" use="required">
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <tooltip>The physical resource for user configuration information.</tooltip>
+                                                <width>120</width>
+                                                <colIndex>4</colIndex>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="name" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <colIndex>1</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="service" type="espServiceType" use="required">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <colIndex>2</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="protocol" use="optional" default="http">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>The protocol to use.</tooltip>
+                                    <required>true</required>
+                                    <colIndex>3</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="http"/>
+                                    <xs:enumeration value="https"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="port" type="xs:nonNegativeInteger" use="required">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Network port to install this service</tooltip>
+                                    <colIndex>4</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="wsdlServiceAddress" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Overrides the address used by client applications to connect to the service.</tooltip>
+                                    <width>110</width>
+                                    <colIndex>5</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="defaultServiceVersion" type="xs:double" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>The default version for WSDL, XSD and the ESP form.</tooltip>
+                                    <colIndex>6</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="resourcesBasedn" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Base location for resources (used with ldap security)</tooltip>
+                                    <width>110</width>
+                                    <colIndex>7</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="workunitsBasedn" type="xs:string" use="optional" default="ou=workunits,ou=ecl">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Base location for workunit resources (used with ldap security)</tooltip>
+                                    <width>110</width>
+                                    <colIndex>8</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="defaultForPort" use="optional" default="true">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>This binding is determines root access</tooltip>
+                                    <required>true</required>
+                                    <colIndex>9</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="false"/>
+                                    <xs:enumeration value="true"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="type" type="securityManagerType" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>The Security Manager to be used by the Esp Service</tooltip>
+                                    <title>securityMgrPlugin</title>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="Authentication">
+                    <xs:annotation>
+                        <xs:appinfo>
+                            <title>Authentication</title>
+                        </xs:appinfo>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <!--DOC-Autobuild-code-->
+                        <xs:annotation>
+                            <xs:appinfo>
+                                <docid>ESP.t4</docid>
+                            </xs:appinfo>
+                        </xs:annotation>
+                        <xs:attribute name="method" use="optional" default="none">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <autogenforwizard>1</autogenforwizard>
+                                    <autogendefaultvalue>none</autogendefaultvalue>
+                                    <tooltip>The protocol to use for authenticating the service</tooltip>
+                                    <required>true</required>
+                                </xs:appinfo>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="none"/>
+                                    <xs:enumeration value="local"/>
+                                    <xs:enumeration value="userNameOnly"/>
+                                    <xs:enumeration value="ldap"/>
+                                    <xs:enumeration value="ldaps"/>
+                                    <xs:enumeration value="secmgrPlugin"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="ldapServer" type="ldapServerType" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>The ldap server to be used for authentication.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="ldapAuthMethod" use="optional" default="kerberos">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>The protocol to use for LDAP authentication (kerberos or simple).</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="kerberos"/>
+                                    <xs:enumeration value="simple"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="ldapConnections" use="optional" default="10">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>The maximum number of connections to the LDAP server.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="passwordExpirationWarningDays" use="optional" default="10">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>In this time period, ESP displays a warning about password expiration.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="checkViewPermissions" type="xs:boolean" use="optional" default="false">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Enable file and column access permission checking for all view enabled queries</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="loginLogoURL" type="xs:string" use="optional" default="/esp/files/eclwatch/img/Loginlogo.png">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>URL to Login Logo</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="getUserNameURL" type="xs:string" use="optional" default="/esp/files/GetUserName.html">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>URL to getUserName</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="getUserNameUnrestrictedResources" type="xs:string" use="optional" default="/favicon.ico,/esp/files/*,/esp/xslt/*">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>unrestricted resources for getUserNameURL</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="AuthDomain" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:appinfo>
+                            <title>AuthDomain</title>
+                        </xs:appinfo>
+                    </xs:annotation>
+                    <!--DOC-Autobuild-code-->
+                    <xs:annotation>
+                        <xs:appinfo>
+                            <docid>ESP.t7</docid>
+                        </xs:appinfo>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:attribute name="domainName" type="xs:string" use="required" default="default">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Unique string to identify an auth domain in case > 1 domains in an esp</tooltip>
+                                    <colIndex>1</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="authType" use="optional" default="AuthTypeMixed">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>User session Authentication type</tooltip>
+                                    <colIndex>2</colIndex>
+                                    <required>true</required>
+                                </xs:appinfo>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="AuthTypeMixed"/>
+                                    <xs:enumeration value="AuthPerSessionOnly"/>
+                                    <xs:enumeration value="AuthPerRequestOnly"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="logonURL" type="xs:string" use="optional" default="/esp/files/Login.html">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Logon URL</tooltip>
+                                    <colIndex>3</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="loginLogoURL" type="xs:string" use="optional" default="/esp/files/eclwatch/img/Loginlogo.png">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>URL to Login Logo</tooltip>
+                                    <colIndex>4</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="logoutURL" type="xs:string" use="optional" default="">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Logout URL</tooltip>
+                                    <colIndex>5</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="clientSessionTimeoutMinutes" use="optional" default="120">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Inactive session duration, in minutes, that is used to timeout a session on ESP client. Specify 0 for default timeout, -1 for never time out.</tooltip>
+                                    <colIndex>6</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="serverSessionTimeoutMinutes" use="optional" default="240">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Considering network delay, serverSessionTimeoutMinutes should be greater than clientSessionTimeoutMinutes.\nIf serverSessionTimeoutMinutes is less than clientSessionTimeoutMinutes, serverSessionTimeoutMinutes = 2 * clientSessionTimeoutMinutes. -1 for never time out.</tooltip>
+                                    <colIndex>7</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="unrestrictedResources" type="xs:string" use="optional" default="/favicon.ico,/esp/files/*,/esp/xslt/*">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <width>50</width>
+                                    <tooltip>unrestricted resources for user authentication</tooltip>
+                                    <colIndex>8</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="invalidURLsAfterAuth" type="xs:string" use="optional" default="/esp/login">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <width>50</width>
+                                    <tooltip>After authentication, requests are redirected to the home page.</tooltip>
+                                    <colIndex>9</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="HTTPS" minOccurs="0">
+                    <xs:complexType>
+                        <!--DOC-Autobuild-code-->
+                        <xs:annotation>
+                            <xs:appinfo>
+                                <docid>ESP.t5</docid>
+                            </xs:appinfo>
+                        </xs:annotation>
+                        <xs:attribute name="cipherList" type="xs:string" use="optional" default="ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Sets the ordered list of available ciphers for use by openssl.  See openssl documentation on ciphers for information on use and formatting.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="certificateFileName" type="xs:string" use="optional" default="@HOME_DIR@/@RUNTIME_USER@/certificate/certificate.pem">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Name of destination file in which the certificate will be written.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="privateKeyFileName" type="xs:string" use="optional" default="@HOME_DIR@/@RUNTIME_USER@/certificate/key.pem">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Name of destination file in which the private key will be written.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="passphrase" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <viewType>password</viewType>
+                                    <tooltip>The passphrase used to generate the private key.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="enableVerification" type="xs:boolean" use="optional" default="false">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>whether to enable verification or not.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="requireAddressMatch" type="xs:boolean" use="optional" default="false">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>whether to require the source address of the request match that of the certificate.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="acceptSelfSigned" type="xs:boolean" use="optional" default="true">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>whether to accept self-signed certificates.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="CA_Certificates_Path" type="xs:string" use="optional" default="@HOME_DIR@/@RUNTIME_USER@/certificate">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>path to the file that contains CA certificates.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="trustedPeers" type="xs:string" use="optional" default="anyone">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>List of trusted peers, in smartsocket format.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="organization" type="xs:string" use="optional" default="Customer of HPCCSystems">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Name of company or organization</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="organizationalUnit" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo/>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="city" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <title>Name of the city</title>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="state" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <title>Name of the state</title>
+                                </xs:appinfo>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="Alabama"/>
+                                    <xs:enumeration value="Alaska"/>
+                                    <xs:enumeration value="Arizona"/>
+                                    <xs:enumeration value="Arkansas"/>
+                                    <xs:enumeration value="California"/>
+                                    <xs:enumeration value="Colorado"/>
+                                    <xs:enumeration value="Connecticut"/>
+                                    <xs:enumeration value="Delaware"/>
+                                    <xs:enumeration value="District Of Columbia"/>
+                                    <xs:enumeration value="Florida"/>
+                                    <xs:enumeration value="Georgia"/>
+                                    <xs:enumeration value="Hawaii"/>
+                                    <xs:enumeration value="Idaho"/>
+                                    <xs:enumeration value="Illinois"/>
+                                    <xs:enumeration value="Indiana"/>
+                                    <xs:enumeration value="Iowa"/>
+                                    <xs:enumeration value="Kansas"/>
+                                    <xs:enumeration value="Kentucky"/>
+                                    <xs:enumeration value="Louisiana"/>
+                                    <xs:enumeration value="Maine"/>
+                                    <xs:enumeration value="Maryland"/>
+                                    <xs:enumeration value="Massachusetts"/>
+                                    <xs:enumeration value="Michigan"/>
+                                    <xs:enumeration value="Minnesota"/>
+                                    <xs:enumeration value="Mississippi"/>
+                                    <xs:enumeration value="Missouri"/>
+                                    <xs:enumeration value="Montana"/>
+                                    <xs:enumeration value="Nebraska"/>
+                                    <xs:enumeration value="Nevada"/>
+                                    <xs:enumeration value="New Hampshire"/>
+                                    <xs:enumeration value="New Jersey"/>
+                                    <xs:enumeration value="New Mexico"/>
+                                    <xs:enumeration value="New York"/>
+                                    <xs:enumeration value="North Carolina"/>
+                                    <xs:enumeration value="North Dakota"/>
+                                    <xs:enumeration value="Ohio"/>
+                                    <xs:enumeration value="Oklahoma"/>
+                                    <xs:enumeration value="Oregon"/>
+                                    <xs:enumeration value="Pennsylvania"/>
+                                    <xs:enumeration value="Rhode Island"/>
+                                    <xs:enumeration value="South Carolina"/>
+                                    <xs:enumeration value="South Dakota"/>
+                                    <xs:enumeration value="Tennessee"/>
+                                    <xs:enumeration value="Texas"/>
+                                    <xs:enumeration value="Utah"/>
+                                    <xs:enumeration value="Vermont"/>
+                                    <xs:enumeration value="Virginia"/>
+                                    <xs:enumeration value="Washington"/>
+                                    <xs:enumeration value="West Virginia"/>
+                                    <xs:enumeration value="Wisconsin"/>
+                                    <xs:enumeration value="Wyoming"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="country" type="xs:string" use="optional" default="US">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <title>Name of the country.</title>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="daysValid" type="xs:string" use="optional" default="365">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <title>Number of days the certificate is valid.</title>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="regenerateCredentials" type="xs:boolean" use="optional" default="false">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Set this to true to regenerate the private key, certificate and CSR.</tooltip>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="ESPCacheGroup" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:appinfo>
+                            <title>ESPCacheGroup</title>
+                        </xs:appinfo>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Unique string to identify an ESP level cache group</tooltip>
+                                    <colIndex>1</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="initString" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>A string sent to cache server for initiating the server.</tooltip>
+                                    <colIndex>2</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="Instance" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:appinfo>
+                            <viewType>Instance</viewType>
+                            <viewChildNodes>true</viewChildNodes>
+                        </xs:appinfo>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Certificate" type="xs:string" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:appinfo>
+                                        <tooltip>A certificate can be pasted here from the clipboard.  Otherwise,\n the generated certificate is displayed here after deployment.</tooltip>
+                                        <title>Certificate</title>
+                                    </xs:appinfo>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="PrivateKey" type="xs:string" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:appinfo>
+                                        <tooltip>A private key can be pasted here from the clipboard.  Otherwise,\n the generated private key is displayed here after deployment.</tooltip>
+                                        <title>Private Key</title>
+                                    </xs:appinfo>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="CSR" type="xs:string" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:appinfo>
+                                        <tooltip>The generated Certificate Signing Request (CSR) is displayed here after first deployment.</tooltip>
+                                        <title>Certificate Signing Request (CSR)</title>
+                                    </xs:appinfo>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="computer" type="computerType" use="required">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <colIndex>1</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="netAddress" type="ipAddress" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <viewType>readonly</viewType>
+                                    <colIndex>2</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="directory" type="absolutePath" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <viewType>hidden</viewType>
+                                    <colIndex>3</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="FQDN" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Fully Qualified Domain Name</tooltip>
+                                    <colIndex>4</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="Notes" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:appinfo>
+                            <viewChildNodes>true</viewChildNodes>
+                        </xs:appinfo>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Note" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                        <xs:attribute name="severity" use="optional" default="Minor">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <tooltip>Significance of this note.</tooltip>
+                                    <title>Severity</title>
+                                    <colIndex>1</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="Minor"/>
+                                    <xs:enumeration value="Normal"/>
+                                    <xs:enumeration value="Critical"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="date" type="AutoTimeStampType" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <title>Date / Time</title>
+                                    <tooltip>Date and time this note was entered</tooltip>
+                                    <viewType>readonly</viewType>
+                                    <width>120</width>
+                                    <colIndex>2</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="computer" type="AutoComputerType" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <title>Computer</title>
+                                    <tooltip>Computer from which this note was entered</tooltip>
+                                    <viewType>readonly</viewType>
+                                    <colIndex>3</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="user" type="AutoUseridType" use="optional">
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <title>User</title>
+                                    <tooltip>User account from which this note was entered</tooltip>
+                                    <viewType>readonly</viewType>
+                                    <colIndex>4</colIndex>
+                                </xs:appinfo>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="build" type="buildType" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>The build name to be deployed</tooltip>
+                        <viewType>hidden</viewType>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="buildSet" type="buildSetType" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <viewType>hidden</viewType>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Name for this process</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="description" type="xs:string" use="optional" default="ESP server">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Description for this process</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="daliServers" type="daliServersType" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <autogenforwizard>1</autogenforwizard>
+                        <tooltip>Specifies the dali server to which this ESP is attached.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="enableSEHMapping" type="xs:boolean" use="optional" default="true">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Enables SEH to exception mapping.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="httpConfigAccess" type="xs:boolean" use="optional" default="true">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Allows esp config file to be viewed via a web browser.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="formOptionsAccess" type="xs:boolean" use="optional" default="false">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Allows show Options in test form page.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="maxRequestEntityLength" type="xs:nonNegativeInteger" use="optional" default="8000000">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>The maximum length of request entity allowed</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="maxConcurrentThreads" type="xs:nonNegativeInteger" use="optional" default="0">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>The maximum number of concurrent threads. 0 means unlimited.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="maxBacklogQueueSize" type="xs:nonNegativeInteger" use="optional" default="200">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Sets the sockets parameter for the maximum number of backlogged requests.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="perfReportDelay" type="xs:nonNegativeInteger" use="optional" default="60">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Sets the frequency for logging resource usage stats.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="portalurl" type="xs:string" default="http://hpccsystems.com/download">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <viewType>hidden</viewType>
+                        <tooltip>portal to HPCC Systems® web site.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="controlPort" type="xs:nonNegativeInteger" use="optional" default="8010">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Sets the network port for ESP control</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="logLevel" type="xs:nonNegativeInteger" use="optional" default="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Sets the log level [0: none, 1: min, 5: noraml, 10: max]</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <!--xs:attribute name="logDir" type="xs:string" use="optional" default=".">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Sets the log directory.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute-->
+            <xs:attribute name="componentfilesDir" type="xs:string" use="optional" default="${COMPONENTFILES_PATH}">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <autogenforwizard>1</autogenforwizard>
+                        <autogendefaultvalue>$componentfilesdir</autogendefaultvalue>
+                        <tooltip>Sets the componentfiles directory.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="logRequests" type="xs:boolean" use="optional" default="true"/>
+            <xs:attribute name="logResponses" type="xs:boolean" use="optional" default="false"/>
+            <xs:attribute name="txSummaryLevel" type="xs:nonNegativeInteger" use="optional" default="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Sets the TxSummary level [0: none, 1: min, 5: noraml, 10: max]</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="txSummaryResourceReq" type="xs:boolean" use="optional" default="false">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Log TxSummary for Resource Requests</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="espCacheInitString" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>String used for initializing ESP cache client.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="checkSessionTimeoutSeconds" type="xs:nonNegativeInteger" use="optional">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Check Session Timeout in every given seconds.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="urlAlias" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>The URL alias for this ESP. This can be used to detect Cross-Origin Resource Sharing (CORS) access.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="PageCacheTimeoutSeconds" type="xs:nonNegativeInteger" use="optional" default="600">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Paging data timeout in the given seconds.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="MaxPageCacheItems" type="xs:nonNegativeInteger" use="optional" default="1000">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>The maximum number of cached items inside one page cache. 0 means no cache.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="maxPersistentIdleTime" type="xs:integer" use="optional" default="60">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>The maximum idle time in seconds (-1 for unlimited, 0 to disable).</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="maxPersistentRequests" type="xs:integer" use="optional" default="100">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Maximum number of query requests per persistent http connection. (-1 for unlimited, 0 to disable).</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="namespaceScheme" use="optional" default="basic">
+               <xs:annotation>
+                 <xs:appinfo>
+                    <tooltip>The scheme used to generate dynamic service namespaces.</tooltip>
+                 </xs:appinfo>
+               </xs:annotation>
+               <xs:simpleType>
+               <xs:restriction base="xs:string">
+                 <xs:enumeration value=""/>
+                   <xs:enumeration value="esdl"/>
+                   <xs:enumeration value="scapps"/>
+                 </xs:restriction>
+               </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="MaxFileAccessExpirySeconds" type="xs:integer" use="optional" default="86400">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Maximum time a file access request is valid for</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

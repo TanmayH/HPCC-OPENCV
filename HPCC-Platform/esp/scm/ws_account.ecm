@@ -1,0 +1,83 @@
+/*##############################################################################
+
+    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems®.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+############################################################################## */
+
+#include "xslprocessor.hpp"
+
+ESPrequest UpdateUserInputRequest
+{
+};
+
+ESPresponse [exceptions_inline] UpdateUserInputResponse
+{
+    string username;
+};
+
+
+ESPrequest MyAccountRequest
+{
+};
+
+ESPresponse [exceptions_inline] MyAccountResponse
+{
+    string username;
+    string firstName;
+    string lastName;
+    string passwordExpiration;
+    int    passwordDaysRemaining;
+    [min_ver("1.01")] int passwordExpirationWarningDays;
+    [min_ver("1.02")] string employeeID;
+    [min_ver("1.03")] string distinguishedName;
+};
+
+
+ESPrequest UpdateUserRequest
+{
+    [label("User Name"), cols(20)] string username;
+    [label("Old Password"), password, cols(20)] oldpass;
+    [label("New password"), password, cols(20)] newpass1;
+    [label("Retype new password"), password, cols(20)] newpass2;
+};
+
+ESPresponse [exceptions_inline] UpdateUserResponse
+{
+    int retcode;
+    string message;
+};
+
+ESPrequest VerifyUserRequest
+{
+	string application;
+	string version;
+};
+
+ESPresponse [exceptions_inline] VerifyUserResponse
+{
+	int retcode;
+};
+
+//Kevin/russ does this method need feature level check?
+ESPservice [auth_feature("NONE"), version("1.03"), default_client_version("1.03"), exceptions_inline("./smc_xslt/exceptions.xslt")] ws_account
+{
+    ESPmethod [client_xslt("/esp/xslt/account_myaccount.xslt")] MyAccount(MyAccountRequest, MyAccountResponse);
+    ESPmethod [client_xslt("/esp/xslt/account_input.xslt")] UpdateUserInput(UpdateUserInputRequest, UpdateUserInputResponse);
+    ESPmethod [resp_xsl_default("./smc_xslt/account.xslt")] UpdateUser(UpdateUserRequest, UpdateUserResponse);
+	ESPmethod VerifyUser(VerifyUserRequest, VerifyUserResponse);
+};
+
+SCMexportdef(ws_account);
+
+SCMapi(ws_account) IClientws_account *createws_accountClient();

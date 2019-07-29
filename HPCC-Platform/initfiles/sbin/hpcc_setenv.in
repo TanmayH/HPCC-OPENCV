@@ -1,0 +1,241 @@
+#!/bin/bash
+################################################################################
+#    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems®.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+################################################################################
+#
+# HPCC Set Environment
+# Extract pathing parameters from config file (optional section) and set
+# relevant environment varibles if we are being sourced. Otherwise, just
+# echo bash-style commands to the caller that can in-turn be sourced.
+
+###<REPLACE>###
+
+function kill_process () {
+    local PID=$1
+    local PROCESS=$2
+    local TIMEOUT=$3
+    if [[ $# -eq 4 ]]; then
+      SENTINEL=$4
+      [[ -e $SENTINEL ]] && rm -f $SENTINEL
+    fi
+    if [[ -e $PID ]]; then
+        pidwait_fn $PID $PROCESS $TIMEOUT 1
+        local RC_PIDWAIT=$?
+        return $RC_PIDWAIT
+    fi
+}
+function dali_kill_process () {
+    local PID=$1
+    local PROCESS=$2
+    local TIMEOUT=$3
+    if [[ $# -eq 4 ]]; then
+      SENTINEL=$4
+      [[ -e $SENTINEL ]] && rm -f $SENTINEL
+    fi
+    if [[ -e $PID ]]; then
+        pidwait_fn $PID $PROCESS $TIMEOUT 0
+        local RC_PIDWAIT=$?
+        return $RC_PIDWAIT
+    fi
+}
+
+function pidwait_fn () {
+    local PID=$1
+    local WATCH_PID=$( cat $PID )
+    local PROCESS=$2
+    local TIMEOUT=$(($3*1000))
+    local FORCE=$4
+
+    if ps -p $WATCH_PID -o command= | grep -v "${PROCESS}" &>/dev/null ; then
+      return 0
+    fi
+
+    kill $WATCH_PID > /dev/null 2>&1
+    while [[ -d /proc/$WATCH_PID ]] && [[ $TIMEOUT -gt 0 ]]; do
+      sleep 0.2
+      local TIMEOUT=$(($TIMEOUT-200))
+    done
+
+    if [[ $TIMEOUT -le 0 ]] && ps -p $WATCH_PID -o command= | grep "${PROCESS}" &>/dev/null ; then
+      log "Failed to kill ${PROCESS} with SIGTERM"
+      if [[ $FORCE -eq 1 ]]; then
+        kill -SIGKILL $WATCH_PID > /dev/null 2>&1
+        log "killing ${PROCESS} (pid: $WATCH_PID) with SIGKILL"
+        rm -f $PID > /dev/null 2>&1
+        return 0
+      fi
+      return 1
+    fi
+
+    rm -f $PID > /dev/null 2>&1
+    return 0
+}
+
+platform='unknown'
+unamestr=`uname`
+if [[ "$unamestr" == 'Linux' ]]; then
+    platform='linux'
+    which nproc >/dev/null 2>&1
+    rc=$?
+    if [[ $rc -eq 0 ]] ; then
+       num_cpus=$(nproc)
+    else
+       num_cpus=$(grep -c ^processor /proc/cpuinfo 2>/dev/null)
+    fi
+elif [[ "$unamestr" == 'Darwin' ]]; then
+    platform='mac'
+    num_cpus=$(sysctl -n hw.ncpu 2>/dev/null)
+fi
+if [[ -z "$num_cpus" ]] ; then
+    num_cpus=1
+fi
+HPCC_CONFIG=${HPCC_CONFIG:-${CONFIG_DIR}/${ENV_CONF_FILE}}
+#SECTION=${1:-DEFAULT}
+SECTION="DEFAULT"
+
+OUMASK=$(umask)
+OIFS="${IFS}"
+unset IFS
+source /etc/profile
+IFS="${OIFS}"
+umask ${OUMASK}
+
+# use less heap when threaded
+# but if set too low it can affect performance significantly
+num_arenas=$num_cpus
+if [ -z "$num_arenas" ] ; then
+    num_arenas=8
+elif [ $num_arenas -lt 8 ] ; then
+    num_arenas=8
+elif [ $num_arenas -gt 32 ] ; then
+    num_arenas=32
+fi
+export MALLOC_ARENA_MAX=$num_arenas
+
+PATH_PREFIX=`cat ${HPCC_CONFIG} | sed -n "/\[${SECTION}\]/,/\[/p" | grep "^path *= *" | sed -e 's/^path *= *//'`
+
+export PID=`cat ${HPCC_CONFIG} | sed -n "/\[${SECTION}\]/,/\[/p" | grep "^pid *= *" | sed -e 's/^pid *= *//'`
+export LD_PRELOAD=`cat ${HPCC_CONFIG} | sed -n "/\[${SECTION}\]/,/\[/p" | grep "^JNI_PATH *= *" | sed -e 's/^JNI_PATH *= *//'`:$LD_PRELOAD
+
+NEW_PATH="${PATH_PREFIX}/bin"
+for D in ${PATH//:/ } ; do
+    if [ "${D}" = "${NEW_PATH}" ]; then
+        unset NEW_PATH
+        break
+    fi
+done
+if [ -n "${NEW_PATH}" ]; then
+    NEW_PATH="${NEW_PATH}:${PATH_PREFIX}/sbin:${PATH_PREFIX}/etc/init.d:${PATH_PREFIX}/testing/regress"
+fi
+
+if [[ $platform == 'linux' ]]; then
+    NEW_LIB="${PATH_PREFIX}/lib"
+    for D in ${LD_LIBRARY_PATH//:/ } ; do
+        if [ "${D}" = "${NEW_LIB}" ]; then
+            unset NEW_LIB
+            break
+        fi
+    done
+
+    NEW_LIB2="${PATH_PREFIX}/plugins"
+    for D in ${LD_LIBRARY_PATH//:/ } ; do
+            if [ "${D}" = "${NEW_LIB2}" ]; then
+                    unset NEW_LIB2
+                    break
+            fi
+    done
+
+    if [[ -d "/opt/rh/devtoolset-2" ]]; then
+        export CL_PATH=/opt/rh/devtoolset-2/root/usr
+    fi
+elif [[ $platform == 'mac' ]]; then
+    NEW_LIB="${PATH_PREFIX}/lib"
+    for D in ${DYLD_LIBRARY_PATH//:/ } ; do
+        if [ "${D}" = "${NEW_LIB}" ]; then
+            unset NEW_LIB
+            break
+        fi
+    done
+
+    NEW_LIB2="${PATH_PREFIX}/plugins"
+    for D in ${DYLD_LIBRARY_PATH//:/ } ; do
+            if [ "${D}" = "${NEW_LIB2}" ]; then
+                    unset NEW_LIB2
+                    break
+            fi
+    done
+fi
+
+if [ `basename -- "$0"` = "hpcc_setenv" ]; then
+    if [ -z ${PATH_PREFIX} ]; then
+        echo "# Can't find path in ${SECTION} section in ${HPCC_CONFIG}"
+        exit 1
+    fi
+    # Not being sourced directly, so echo out commands to do so to the caller
+    if [ -n "${NEW_PATH}" ]; then
+        echo "export PATH=${PATH:+${PATH}:}${NEW_PATH}"
+    else
+        echo "# \$PATH already contains ${PATH_PREFIX}/bin"
+    fi
+    if [[ $platform == 'linux' ]]; then
+        if [ -n "${NEW_LIB}" ]; then
+            echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${NEW_LIB}"
+        else
+            echo "# \$LD_LIBRARY_PATH already contains ${PATH_PREFIX}/lib"
+        fi
+
+        if [ -n "${NEW_LIB2}" ]; then
+                echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${NEW_LIB2}"
+        else
+                echo "# \$LD_LIBRARY_PATH already contains ${PATH_PREFIX}/plugins"
+        fi
+    elif [[ $platform == 'mac' ]]; then
+        if [ -n "${NEW_LIB}" ]; then
+            echo "export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}${NEW_LIB}"
+        else
+            echo "# \$DYLD_LIBRARY_PATH already contains ${PATH_PREFIX}/lib"
+        fi
+
+        if [ -n "${NEW_LIB2}" ]; then
+                echo "export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}${NEW_LIB2}"
+        else
+                echo "# \$DYLD_LIBRARY_PATH already contains ${PATH_PREFIX}/plugins"
+        fi
+    fi
+    
+else
+    if [ -z ${PATH_PREFIX} ]; then
+        return
+    fi
+    # being sourced - can set environment vars directly
+    if [ -n "${NEW_PATH}" ]; then
+        export PATH=${PATH:+${PATH}:}${NEW_PATH}
+    fi
+    if [[ $platform == 'linux' ]]; then
+        if [ -n "${NEW_LIB}" ]; then
+            export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${NEW_LIB}
+        fi
+        if [ -n "${NEW_LIB2}" ]; then
+                export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${NEW_LIB2}
+        fi
+    elif [[ $platform == 'mac' ]]; then
+        if [ -n "${NEW_LIB}" ]; then
+            export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}${NEW_LIB}
+        fi
+        if [ -n "${NEW_LIB2}" ]; then
+                export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}${NEW_LIB2}
+        fi
+    fi
+fi

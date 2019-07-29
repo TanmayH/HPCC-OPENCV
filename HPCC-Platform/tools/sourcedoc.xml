@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+################################################################################
+#    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems®.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+################################################################################
+-->
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
+<section>
+    <title>tools</title>
+
+    <para>
+        The tools directory contains the sources for the tools library.
+    </para>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="backupnode/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="combine/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="copyexp/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dumpkey/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="esdl/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="fcached/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="hidl/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="keydiff/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="psexec/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="pskill/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="pstart/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="swapnode/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="testsocket/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="vkey/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="wuget/sourcedoc.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="initldap/sourcedoc.xml"/>
+</section>

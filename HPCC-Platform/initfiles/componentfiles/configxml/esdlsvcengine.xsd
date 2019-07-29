@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:include schemaLocation="environment.xsd"/>
+    <xs:element name="EspService">
+        <xs:complexType>
+            <xs:attribute name="build" type="buildType" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <viewType>hidden</viewType>
+                        <tooltip>The build name to be deployed</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="buildSet" type="buildSetType" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <viewType>hidden</viewType>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="name" type="xs:string" use="required" default="">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <title>Dynamic ESDL Service Name</title>
+                        <required>true</required>
+                        <tooltip>Name for this Dynamic ESDL based web service interface.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="description" type="xs:string" use="optional" default="My ESDL Based Web Service Interface">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <title>ESDL Service Description</title>
+                        <tooltip>Describes each ESDL based web service interface</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="namespaceScheme" type="xs:string" use="optional" default="">
+               <xs:annotation>
+                 <xs:appinfo>
+                    <tooltip>The scheme used to generate dynamic service namespaces.</tooltip>
+                 </xs:appinfo>
+               </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="namespaceBase" type="xs:string" use="optional" default="urn:hpccsystems:ws">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <title>ESDL service namespace base</title>
+                        <tooltip>Overrides default urn for this ESDL service</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="LoggingManager" type="loggingmanagerType" use="optional">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Specifies the Logging Manager.</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

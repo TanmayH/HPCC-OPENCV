@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+################################################################################
+#    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems®.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+################################################################################
+-->
+
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Rajeev Moondhra (Seisint, Inc.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:include schemaLocation="environment.xsd"/>
+    <xs:element name="EspService">
+        <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ProcessCluster" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:appinfo>
+                    <title>VIPS</title>
+                  </xs:appinfo>
+                </xs:annotation>
+                <xs:complexType>
+                <!--DocAutoBuildCode-->
+                  <xs:annotation>
+                    <xs:appinfo>
+                      <docid>MyWS2-T01</docid>
+                   </xs:appinfo>
+                  </xs:annotation>
+           <xs:attribute name="name" type="xs:string" use="required" default="">
+                    <xs:annotation>
+                      <xs:appinfo>
+                        <viewType>hidden</viewType>
+                      </xs:appinfo>
+                    </xs:annotation>
+                  </xs:attribute>
+                  <xs:attribute name="roxie" type="xpathType" use="required" default="">
+                    <xs:annotation>
+                      <xs:appinfo>
+                        <colIndex>1</colIndex>
+                        <xpath>/Environment/Software/RoxieCluster[@name!=$./*ProcessCluster/@roxie]</xpath>
+                      </xs:appinfo>
+                    </xs:annotation>
+                  </xs:attribute>
+                  <xs:attribute name="vip" type="xs:string" use="required">
+                    <xs:annotation>
+                      <xs:appinfo>
+                        <colIndex>2</colIndex>
+                      </xs:appinfo>
+                    </xs:annotation>
+                  </xs:attribute>
+                  <xs:attribute name="dnsInterval" type="xs:integer" use="optional" default="-1">
+                      <xs:annotation>
+                          <xs:appinfo>
+                              <tooltip>DNS lookup cache timeout in seconds. Set to 0 to resolve DNS for every transaction.  Set to -1 (default) to keep DNS lookup cached indefinitely.</tooltip>
+                              <title>DNS Cache timeout interval</title>
+                              <colIndex>3</colIndex>
+                          </xs:appinfo>
+                      </xs:annotation>
+                  </xs:attribute>
+                  <xs:attribute name="sendTargetToRoxie" use="optional" default="true">
+                      <xs:annotation>
+                          <xs:appinfo>
+                              <tooltip>Send roxie the target from which to run query (disable for backward compatibility issues)</tooltip>
+                              <title>Send Target To Roxie</title>
+                              <colIndex>4</colIndex>
+                          </xs:appinfo>
+                      </xs:annotation>
+                      <xs:simpleType>
+                          <xs:restriction base="xs:string">
+                              <xs:enumeration value="true"/>
+                              <xs:enumeration value="false"/>
+                          </xs:restriction>
+                      </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Target" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:appinfo>
+                    <title>Restrict To Target(s)</title>
+                  </xs:appinfo>
+                </xs:annotation>
+                <xs:complexType>
+                <!--DocAutoBuildCode-->
+                 <xs:annotation>
+                   <xs:appinfo>
+                     <docid>MyWS2-T02</docid>
+                   </xs:appinfo>
+                 </xs:annotation>
+                  <xs:attribute name="name" type="topologyClusterType" use="required">
+                    <xs:annotation>
+                      <xs:appinfo>
+                        <tooltip>WsEcl will only display specified targets, if none specified WsEcl will display all targets.</tooltip>
+                      </xs:appinfo>
+                    </xs:annotation>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <!--DocAutoBuildCode-->
+            <xs:annotation>
+              <xs:appinfo>
+                <docid>MyWS2-T03</docid>
+              </xs:appinfo>
+            </xs:annotation>
+            <xs:attribute name="build" type="buildType" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>The build name to be deployed</tooltip>
+                        <viewType>hidden</viewType>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="buildSet" type="buildSetType" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <viewType>hidden</viewType>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="name" type="xs:string" use="optional" default="ws_ecl_service">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Name for this ESP service</tooltip>
+                        <required>true</required>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="description" type="xs:string" use="optional" default="WS ECL Service">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Allows creation of web services using ECL language</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="roxieTimeout" type="xs:unsignedInt" use="optional" default="300">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Timeout (in seconds) for WsEcl connections to roxie (0 == wait forever)</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="workunitTimeout" type="xs:unsignedInt" use="optional" default="600">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Timeout (in seconds), for WsEcl to wait for workunit to complete (0 == wait forever)</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="xsltMaxDepth" type="xs:unsignedInt" use="optional" default="100000">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Maximum libxslt stylesheet template depth (affects size and complexity of dataset that can be rendered)</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="xsltMaxVars" type="xs:unsignedInt" use="optional" default="1000000">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <tooltip>Maximum libxslt stylesheet template variables (affects size and complexity of dataset that can be rendered)</tooltip>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="httpCallerIdHeader" type="xs:string" use="optional" default="HPCC-Caller-Id">
+              <xs:annotation>
+                <xs:appinfo>
+                  <tooltip>HTTP Header field to use for sending and receiving CallerId</tooltip>
+                </xs:appinfo>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="httpGlobalIdHeader" type="xs:string" use="optional" default="HPCC-Global-Id">
+              <xs:annotation>
+                <xs:appinfo>
+                  <tooltip>HTTP Header field to use for sending and receiving GlobalId</tooltip>
+                </xs:appinfo>
+              </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
