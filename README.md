@@ -4,7 +4,7 @@ OpenCV Plugin for HPCC Platform
     
     To run:  
     1). Setup opencv on the local cluster. Ensure that the libraries are present at the pkg-config location  
-    2). Clone the HPCC Platform from their github link: [https://github.com/hpcc-systems/HPCC-Platform]  
+    2). Clone the HPCC Platform from their github link: https://github.com/hpcc-systems/HPCC-Platform  
     3). cd into the HPCC_OPENCV directory  
     4). Run the build file using : ./build.sh <Location of cloned HPCC Platform>  
     5). Run the install file using : ./install.sh  
