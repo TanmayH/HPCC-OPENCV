@@ -1,9 +1,0 @@
-T := 0
-#IF (FALSE)
-  + 1
-#ELSEIF (FALSE)
-  + 2
-#ELSE
-#END
-;
-OUTPUT(T);

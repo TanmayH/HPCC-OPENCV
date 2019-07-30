@@ -1,1 +1,0 @@
-REGEXREPLACE('a[', 'b', 'c');

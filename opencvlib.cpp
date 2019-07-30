@@ -10,38 +10,33 @@ namespace OPENCVLib
     using namespace cv;
     using namespace std;
 
-    Mat src, src_gray;
-    Mat dst, detected_edges;
-    int lowThreshold = 0;
-    const int max_lowThreshold = 100;
-    const int ratio = 3;
-    const int kernel_size = 3;
-    const char* window_name = "Edge Map";
-
     /*License Plate Detection function */
     OPENCVLIB_API void OPENCVLIB_CALL licenseplate(size32_t & __lenResult,char *  & __result, size32_t lenData,const void * data)
     {
         bool blnKNNTrainingSuccessful = loadKNNDataAndTrainKNN();
+        
+        char fail[4];
+        memset(fail,0,sizeof(fail));
+        memcpy(fail,"Fail",4);
+       
         cv::Mat imgOriginalScene;   
-        std::string fail = "Failure";
         std::string result;
         std::vector<char> img_data((char *) data, (char *)data + lenData);
+        
         /* Training KNN Modules */
         if (!blnKNNTrainingSuccessful){
-            std::cout << "Error: KNN traning was not successful";
+            __lenResult = 4;
+            __result = reinterpret_cast<char*>(rtlMalloc(4));
+            memcpy(__result,fail,4);
         }
-
-        // imwrite("./test.jpg",Mat(img_data));
-
+        
         /*Reading the image from the supplied path */    
         imgOriginalScene = cv::imdecode(Mat(img_data), -1);  
-        cv:imshow("car",imgOriginalScene);
-
         if (imgOriginalScene.empty()) 
-        {                             
-            // std::cout << "error: image not read from file\n\n";     
+        {                                
             __lenResult=4;
-            __result=const_cast<char*>(fail.c_str());                                                                                       
+            __result = reinterpret_cast<char*>(rtlMalloc(4));
+            memcpy(__result,fail,4);                                                                                       
         }
 
         /*Detecting Plates */
@@ -50,244 +45,162 @@ namespace OPENCVLib
         /*Detecting Chars in Plates */
         vectorOfPossiblePlates = detectCharsInPlates(vectorOfPossiblePlates);                               
 
-        /*Original Image*/
-        cv::imshow("car", imgOriginalScene);          
+        /*Checking for possible plates */        
         if (vectorOfPossiblePlates.empty()) 
-        {                                              
-            // std::cout << std::endl << "no license plates were detected" << std::endl;     
+        {                                                  
             __lenResult=4;
-            __result=const_cast<char*>(fail.c_str());
+            __result = reinterpret_cast<char*>(rtlMalloc(4));
+            memcpy(__result,fail,4);
         }
         else 
-        {                                                                           
-                                                                                        
+        {                                                                                                                                                  
             std::sort(vectorOfPossiblePlates.begin(), vectorOfPossiblePlates.end(), PossiblePlate::sortDescendingByNumberOfChars);
-        
             PossiblePlate licPlate = vectorOfPossiblePlates.front();
-
-            /*Displaying plates as overlay*/
-            // cv::imshow("imgPlate", licPlate.imgPlate);            
-            // cv::imshow("imgThresh", licPlate.imgThresh);
-
+            /*Setting the result based on licPlate output */
             if (licPlate.strChars.length() == 0) 
-            {                                                     
-                // std::cout << std::endl << "no characters were detected" << std::endl << std::endl;      
+            {                                                          
                 __lenResult=4;
-                __result=const_cast<char*>(fail.c_str());                                                                        
+                __result = reinterpret_cast<char*>(rtlMalloc(4));
+                memcpy(__result,fail,4);                                                                       
             }
-
-            // drawRedRectangleAroundPlate(imgOriginalScene, licPlate);
-
-            /*Setting Result*/
-            __lenResult=licPlate.strChars.length();
-            result=licPlate.strChars.c_str();
-
-            char *c = new char[__lenResult + 1];
-            std::copy(result.begin(), result.end(), c);
-            c[__lenResult] = '\0';
-            __result=c;
-                
-            // std::cout << std::endl << "Press any key to close window.." << std::endl;
-
-            // writeLicensePlateCharsOnImage(imgOriginalScene, licPlate);            
-
-            // cv::imshow("car", imgOriginalScene);                      
-
-            // cv::waitKey(0);        
-        }
-
-    }
-
-    /*Function to draw Rectangular Bounds around Plates */
-    void drawRedRectangleAroundPlate(cv::Mat &imgOriginalScene, PossiblePlate &licPlate) 
-    {
-        cv::Point2f p2fRectPoints[4];
-
-        licPlate.rrLocationOfPlateInScene.points(p2fRectPoints);           
-
-        for (int i = 0; i < 4; i++) 
-        {                                       
-            cv::line(imgOriginalScene, p2fRectPoints[i], p2fRectPoints[(i + 1) % 4], SCALAR_RED, 2);
+            else {
+                result=licPlate.strChars.c_str();
+                __lenResult=licPlate.strChars.length();
+                __result = reinterpret_cast<char*>(rtlMalloc(__lenResult));
+                char *c = new char[__lenResult];
+                std::copy(result.begin(), result.end(), c);
+                memcpy(__result,c,__lenResult);  
+            }       
         }
     }
-
-    /*Function to write License Plate Chars on Image*/ 
-    void writeLicensePlateCharsOnImage(cv::Mat &imgOriginalScene, PossiblePlate &licPlate) 
-    {
-        cv::Point ptCenterOfTextArea;                   
-        cv::Point ptLowerLeftTextOrigin;                
-
-        int intFontFace = CV_FONT_HERSHEY_SIMPLEX;                              
-        double dblFontScale = (double)licPlate.imgPlate.rows / 30.0;            
-        int intFontThickness = (int)std::round(dblFontScale * 1.5);             
-        int intBaseline = 0;
-
-        cv::Size textSize = cv::getTextSize(licPlate.strChars, intFontFace, dblFontScale, intFontThickness, &intBaseline);      
-
-        ptCenterOfTextArea.x = (int)licPlate.rrLocationOfPlateInScene.center.x;         
-
-        if (licPlate.rrLocationOfPlateInScene.center.y < (imgOriginalScene.rows * 0.75)) {      
-                                                                                                
-            ptCenterOfTextArea.y = (int)std::round(licPlate.rrLocationOfPlateInScene.center.y) + (int)std::round((double)licPlate.imgPlate.rows * 1.6);
-        }
-        else {                                                                                
-            ptCenterOfTextArea.y = (int)std::round(licPlate.rrLocationOfPlateInScene.center.y) - (int)std::round((double)licPlate.imgPlate.rows * 1.6);
-        }
-
-        ptLowerLeftTextOrigin.x = (int)(ptCenterOfTextArea.x - (textSize.width / 2));           
-        ptLowerLeftTextOrigin.y = (int)(ptCenterOfTextArea.y + (textSize.height / 2));          
-        cv::putText(imgOriginalScene, licPlate.strChars, ptLowerLeftTextOrigin, intFontFace, dblFontScale, SCALAR_YELLOW, intFontThickness);
-    }
-
-    /* ============================================================================================================================ */
-    
-    /*Edge Detection function */
-    OPENCVLIB_API long long OPENCVLIB_CALL edge_detect(const char * path)
-    {   
-        /*Load the image */
-        src = imread( path, IMREAD_COLOR );
-        if( src.empty() )
-        {
-            std::cout << "Could not open or find the image!\n" << std::endl;
-            return 0;
-        }
-
-        dst.create( src.size(), src.type() );
-        cvtColor( src, src_gray, COLOR_BGR2GRAY );
-        namedWindow( window_name, WINDOW_AUTOSIZE );
-
-        /*Setting the Threshold */
-        createTrackbar( "Min Threshold:", window_name, &lowThreshold, max_lowThreshold, CannyThreshold );
-        CannyThreshold(0, 0);
-        std::cout << std::endl << "Press any key to close window.." << std::endl;
-
-        waitKey(0);
-        return 1;
-    }
-
-    /*Threshold Setter */
-    static void CannyThreshold(int, void*)
-    {
-        blur( src_gray, detected_edges, Size(3,3) );
-        Canny( detected_edges, detected_edges, lowThreshold, lowThreshold*ratio, kernel_size );
-        dst = Scalar::all(0);
-        src.copyTo( dst, detected_edges);
-        imshow( window_name, dst );
-    }
-
     /* ============================================================================================================================ */
     
     /*Function to perform gaussian blur of an image */
-    OPENCVLIB_API long long OPENCVLIB_CALL gaussblur(const char * path,const char * dest, long long scale)
+    OPENCVLIB_API void OPENCVLIB_CALL gaussblur(size32_t & __lenResult, void * & __result,size32_t lenData,const void * data, long long scale)
     {
+        char fail[4];
+        memset(fail,0,sizeof(fail));
+        memcpy(fail,"Fail",4);
+        
         /*Loading source */
-        Mat image = imread(path);
+        std::vector<char> img_data((char *) data, (char *)data + lenData);
+        std::vector<uchar> buf;
+        
+        /*Decoding image */    
+        cv::Mat image = cv::imdecode(Mat(img_data), -1); 
         if (image.empty())
         {
-            cout << "Could not open or find the image" << endl;
-            return 0;
+            __lenResult = 4;
+            __result = reinterpret_cast<char*>(rtlMalloc(4));
+            memcpy(__result,fail,4);
         }
-        
+
         /*Performing Blur */
         Mat image_blurred_with_nxn_kernel;
         GaussianBlur(image, image_blurred_with_nxn_kernel, Size(scale, scale), 0);
 
-        
-        String window_name = "Image";
-        String window_name_blurred_with_nxn_kernel = "Image after Gaussian Blur" ;
+        /*Storing Result*/
+        imencode(".jpg",image_blurred_with_nxn_kernel,buf);
+        __lenResult = buf.size();
+        __result = reinterpret_cast<char*>(rtlMalloc(__lenResult));
+        char* c = new char[__lenResult +1];
+        std::copy(buf.begin(), buf.end(), c);
+        memcpy(__result,c,__lenResult); 
 
-        /*Displaying Original and blurred image*/
-        namedWindow(window_name);
-        namedWindow(window_name_blurred_with_nxn_kernel);
-
-        
-        imshow(window_name, image);
-        imshow(window_name_blurred_with_nxn_kernel, image_blurred_with_nxn_kernel);
-
-        /*Writing result to destination */
-        imwrite(dest,image_blurred_with_nxn_kernel);
-
-        std::cout << std::endl << "Press any key to close window.." << std::endl;
-
-        waitKey(0); 
-
-        destroyAllWindows(); 
-
-        return 1;
+        /*Display Section (comment before running on cluster)*/
+        // displayResults(image, image_blurred_with_nxn_kernel);       
     }
 
     /*Function to perform greyscale of an image */
-    OPENCVLIB_API long long OPENCVLIB_CALL grayscale(const char * path, const char * dest)
+    OPENCVLIB_API void OPENCVLIB_CALL grayscale(size32_t & __lenResult, void * & __result,size32_t lenData,const void * data)
     {
+        char fail[4];
+        memset(fail,0,sizeof(fail));
+        memcpy(fail,"Fail",4);
+
         /*Loading source */
-        Mat image = imread(path);
-        if(! image.data )                             
+        std::vector<char> img_data((char *) data, (char *)data + lenData);
+        std::vector<uchar> buf;
+        
+        /*Decoding image */    
+        cv::Mat image = cv::imdecode(Mat(img_data), -1); 
+        if (image.empty())
         {
-                cout <<  "Could not open or find the image" << std::endl ;
-                return 0;
+            __lenResult = 4;
+            __result = reinterpret_cast<char*>(rtlMalloc(4));
+            memcpy(__result,fail,4);
         }
-        Mat gray;
-    
+
         /*convert RGB image to gray*/
+        Mat gray;
         cvtColor(image, gray, CV_BGR2GRAY);
 
-        /*Display Original and greyscaled results*/
-        namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
-        imshow( "Display window", image );                 
-    
-        namedWindow( "Result window", CV_WINDOW_AUTOSIZE );   
-        imshow( "Result window", gray );
+        /*Storing result*/
+        imencode(".jpg",gray,buf);
+        __lenResult = buf.size();
+        __result = reinterpret_cast<char*>(rtlMalloc(__lenResult));
+        char* c = new char[__lenResult +1];
+        std::copy(buf.begin(), buf.end(), c);
+        memcpy(__result,c,__lenResult); 
 
-        /*Writing result to destination */
-        imwrite(dest,gray);
-
-        std::cout << std::endl << "Press any key to close window.." << std::endl;
-    
-        waitKey(0);
-
-        return 1;
-
+        /*Display Section (comment before running on cluster)*/
+        // displayResults(image, gray);
     }
 
     /*Function to perform resizing of an image */
-    OPENCVLIB_API long long OPENCVLIB_CALL resize(const char * path, const char * dest,double fx, double fy)
+    OPENCVLIB_API void OPENCVLIB_CALL resize(size32_t & __lenResult, void * & __result,size32_t lenData,const void * data,double fx, double fy)
     {
+        char fail[4];
+        memset(fail,0,sizeof(fail));
+        memcpy(fail,"Fail",4);
+
         /*Loading source */
-        Mat image = imread(path);
-        if(! image.data )                             
+        std::vector<char> img_data((char *) data, (char *)data + lenData);
+        std::vector<uchar> buf;
+        
+        /*Decoding image */    
+        cv::Mat image = cv::imdecode(Mat(img_data), -1); 
+        if (image.empty())
         {
-                cout <<  "Could not open or find the image" << std::endl ;
-                return 0;
+            __lenResult = 4;
+            __result = reinterpret_cast<char*>(rtlMalloc(4));
+            memcpy(__result,fail,4);
         }
-        Mat out;
 
         /*Performing resize*/
+        Mat out;
         resize(image, out, Size(),fx,fy);
-        
-        /*Displaying Results*/
-        namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
-        imshow( "Display window", out );  
 
-        /*Writing result to destination */
-        imwrite(dest,out);
+        /*Storing result*/
+        imencode(".jpg",out,buf);
+        __lenResult = buf.size();
+        __result = reinterpret_cast<char*>(rtlMalloc(__lenResult));
+        char* c = new char[__lenResult +1];
+        std::copy(buf.begin(), buf.end(), c);
+        memcpy(__result,c,__lenResult); 
 
-        std::cout << std::endl << "Press any key to close window.." << std::endl;               
-    
-        waitKey(0);
-
-        return 1;
+        /*Display Section (comment before running on cluster)*/
+        // displayResults(image, out);
     }
 
     /*Function to perform rotation of an image */
-    OPENCVLIB_API long long OPENCVLIB_CALL rotate_img(const char * path,const char * dest,double angle)
+    OPENCVLIB_API void OPENCVLIB_CALL rotate_img(size32_t & __lenResult, void * & __result,size32_t lenData,const void * data,double angle)
     {
-        /*Loading source */
-        cv::Mat src = cv::imread(path, CV_LOAD_IMAGE_UNCHANGED);
+        char fail[4];
+        memset(fail,0,sizeof(fail));
+        memcpy(fail,"Fail",4);
 
-        if(! src.data )                             
+        /*Loading source */
+        std::vector<char> img_data((char *) data, (char *)data + lenData);
+        std::vector<uchar> buf;
+        
+        /*Decoding image */    
+        cv::Mat src = cv::imdecode(Mat(img_data), -1); 
+        if (src.empty())
         {
-                cout <<  "Could not open or find the image" << std::endl ;
-                return 0;
+            __lenResult = 4;
+            __result = reinterpret_cast<char*>(rtlMalloc(4));
+            memcpy(__result,fail,4);
         }
         
         /* Get rotation matrix */
@@ -305,61 +218,74 @@ namespace OPENCVLib
         cv::Mat dst;
         cv::warpAffine(src, dst, rot, bbox.size());
 
-        /*Display Results */
-        namedWindow( "Result window", CV_WINDOW_AUTOSIZE );   
-        imshow( "Result window", dst );
+        /*Storing result*/
+        imencode(".jpg",dst,buf);
+        __lenResult = buf.size();
+        __result = reinterpret_cast<char*>(rtlMalloc(__lenResult));
+        char* c = new char[__lenResult +1];
+        std::copy(buf.begin(), buf.end(), c);
+        memcpy(__result,c,__lenResult); 
 
-        /*Writing Results to destination*/
-        cv::imwrite(dest, dst);
-
-        std::cout << std::endl << "Press any key to close window.." << std::endl;             
- 
-        waitKey(0);
-
-        return 1;
-
+        /*Display Section (comment before running on cluster)*/
+        // displayResults(src, dst);
     } 
 
     /*Function to thresholding of an image */
-    OPENCVLIB_API long long OPENCVLIB_CALL threshold_img(const char * path, const char * dest,double threshval, double maxval=255,long long type=0 )
+    OPENCVLIB_API void OPENCVLIB_CALL threshold_img(size32_t & __lenResult, void * & __result,size32_t lenData,const void * data,double threshval, double maxval=255,long long type=0 )
     {
+        char fail[4];
+        memset(fail,0,sizeof(fail));
+        memcpy(fail,"Fail",4);
+
         /*Loading source */
-        Mat image = imread(path,0);
-        if(! image.data )                             
+        std::vector<char> img_data((char *) data, (char *)data + lenData);
+        std::vector<uchar> buf;
+        
+        /*Decoding image */    
+        cv::Mat image = cv::imdecode(Mat(img_data), -1); 
+        if (image.empty())
         {
-              cout <<  "Could not open or find the image" << std::endl ;
-              return 0;
+            __lenResult = 4;
+            __result = reinterpret_cast<char*>(rtlMalloc(4));
+            memcpy(__result,fail,4);
         }
-        Mat res; 
 
         /*Performing thresholding */
+        Mat res; 
         threshold(image,res, threshval,maxval,type);
- 
-        /*Displaying Results */
-        namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
-        imshow( "Display window", res );  
 
-        /*Writing result to destination */
-        imwrite(dest,res);
+        /*Storing result*/
+        imencode(".jpg",res,buf);
+        __lenResult = buf.size();
+        __result = reinterpret_cast<char*>(rtlMalloc(__lenResult));
+        char* c = new char[__lenResult +1];
+        std::copy(buf.begin(), buf.end(), c);
+        memcpy(__result,c,__lenResult); 
 
-        std::cout << std::endl << "Press any key to close window.." << std::endl;               
- 
-        waitKey(0);
-        return 1;
+        /*Display Section (comment before running on cluster)*/
+        // displayResults(image, res);
     }
 
     /*Function to perform translation of an image */
-    OPENCVLIB_API long long OPENCVLIB_CALL translate_img(const char * path,const char * dest, double x,double y)
+    OPENCVLIB_API void OPENCVLIB_CALL translate_img(size32_t & __lenResult, void * & __result,size32_t lenData,const void * data,double x,double y)
     {
+        char fail[4];
+        memset(fail,0,sizeof(fail));
+        memcpy(fail,"Fail",4);
+
         /*Loading source */
         Mat src, warp_dst;
         Mat warp_mat = Mat::eye(2, 3, CV_64F);
-
-        src = imread( path, 1 );
-        if(! src.data )                             
+        std::vector<char> img_data((char *) data, (char *)data + lenData);
+        std::vector<uchar> buf;
+        
+        /*Decoding image */    
+        src = cv::imdecode(Mat(img_data), -1); 
+        if (src.empty())
         {
-              cout <<  "Could not open or find the image" << std::endl ;
-              return 0;
+            __lenResult = 4;
+            __result = reinterpret_cast<char*>(rtlMalloc(4));
+            memcpy(__result,fail,4);
         }
         
         /* Setting transform matrix */
@@ -370,24 +296,76 @@ namespace OPENCVLib
         /*Applying Affine Transform */
         warpAffine( src, warp_dst, warp_mat, warp_dst.size() );
 
-        /*Displaying Results */
-        namedWindow( "Source Window", CV_WINDOW_AUTOSIZE );
-        imshow( "Source Window", src );
+        /*Storing result*/
+        imencode(".jpg",warp_dst,buf);
+        __lenResult = buf.size();
+        __result = reinterpret_cast<char*>(rtlMalloc(__lenResult));
+        char* c = new char[__lenResult +1];
+        std::copy(buf.begin(), buf.end(), c);
+        memcpy(__result,c,__lenResult); 
 
-        namedWindow( "Warp Window", CV_WINDOW_AUTOSIZE );
-        imshow( "Warp Window", warp_dst );
-
-        /*Writing result to destination */
-        imwrite(dest,warp_dst);
-
-        std::cout << std::endl << "Press any key to close window.." << std::endl;
-        waitKey(0);
-
-        return 1;
-
+        /*Display Section (comment before running on cluster)*/
+        // displayResults(src, warp_dst);
     }
 
     /* ============================================================================================================================ */
 
+    /*Edge Detection function */
+    OPENCVLIB_API long long OPENCVLIB_CALL edge_detect(size32_t & __lenResult, void * & __result,size32_t lenData,const void * data, long long threshold)
+    {  
+        char fail[4];
+        memset(fail,0,sizeof(fail));
+        memcpy(fail,"Fail",4);
+
+        Mat src, src_gray;
+        Mat dst, detected_edges;
+        const int setThresold = threshold > 100 ? 100 : threshold;
+        const int ratio = 3;
+        const int kernel_size = 3;
+
+        /*Loading source */
+        std::vector<char> img_data((char *) data, (char *)data + lenData);
+        std::vector<uchar> buf;
+        
+        /*Decoding image */
+        src = cv::imdecode(Mat(img_data), -1); 
+        if (src.empty())
+        {
+            __lenResult = 4;
+            __result = reinterpret_cast<char*>(rtlMalloc(4));
+            memcpy(__result,fail,4);
+        }
+
+        /*Creating edge detected output*/
+        dst.create( src.size(), src.type() );
+        cvtColor( src, src_gray, COLOR_BGR2GRAY );
+        blur( src_gray, detected_edges, Size(3,3) );
+        Canny( detected_edges, detected_edges, threshold, threshold*ratio, kernel_size );
+        dst = Scalar::all(0);
+        src.copyTo( dst, detected_edges);
+
+        /*Storing Result*/
+        imencode(".jpg",dst,buf);
+        __lenResult = buf.size();
+        __result = reinterpret_cast<char*>(rtlMalloc(__lenResult));
+        char* c = new char[__lenResult +1];
+        std::copy(buf.begin(), buf.end(), c);
+        memcpy(__result,c,__lenResult); 
+
+        /*Display Section (comment before running on cluster)*/
+        // displayResults(src, dst);       
+    }
+
+    /* ============================================================================================================================ */
+    /*Helper functions*/
+
+    void displayResults(cv::Mat input, cv::Mat output)
+    {
+        namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
+        imshow( "Display window", input );
+        namedWindow( "Display output window", CV_WINDOW_AUTOSIZE );  
+        imshow( "Display output window", output );
+        waitKey(0);
+    }
 } 
 

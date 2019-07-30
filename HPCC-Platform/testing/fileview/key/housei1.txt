@@ -1,3 +1,0 @@
-id addr filepos
-1 99 Maltings Road 0
-3 Bedrock 73

@@ -1,2 +1,0 @@
-id addr postcode yearbuilt __fileposition__
-3 Bedrock            0 73

@@ -4,28 +4,12 @@ cv::Ptr<cv::ml::KNearest> kNearest = cv::ml::KNearest::create();
 
 bool loadKNNDataAndTrainKNN(void) 
 {  
-    cv::Mat matClassificationInts;             
-    cv::FileStorage fsClassifications("./xml/classifications.xml", cv::FileStorage::READ);        
-    if (fsClassifications.isOpened() == false) {                                                      
-        std::cout << "error, unable to open training classifications file, exiting program\n\n";        
-        return(false);                                                                                  
-    }
-
-    fsClassifications["classifications"] >> matClassificationInts;          
-    fsClassifications.release();                                           
-    cv::Mat matTrainingImagesAsFlattenedFloats;       
-    cv::FileStorage fsTrainingImages("./xml/images.xml", cv::FileStorage::READ);              
-    if (fsTrainingImages.isOpened() == false) 
-    {                                                 
-        std::cout << "error, unable to open training images file, exiting program\n\n";       
-        return(false); 
-    }                                                                         
-    fsTrainingImages["images"] >> matTrainingImagesAsFlattenedFloats;          
-    fsTrainingImages.release();                                               
+    float * classificationData = CLASSIFICATION_DATA;
+    cv::Mat matClassificationInts = cv::Mat(180, 1, CV_32FC1, classificationData);
+    float * imageData = IMAGE_DATA;                                              
+    cv::Mat matTrainingImagesAsFlattenedFloats = cv::Mat(180, 600, CV_32FC1, imageData);                                              
     kNearest->setDefaultK(1);
-
     kNearest->train(matTrainingImagesAsFlattenedFloats, cv::ml::ROW_SAMPLE, matClassificationInts);
-
     return true;
 }
 

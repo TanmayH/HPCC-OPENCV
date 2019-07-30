@@ -5,83 +5,83 @@ END;
 
 /*Service for Edge Detection*/
 SHARED EdgeService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
-    INTEGER DETECT_EDGE(VARSTRING s) : cpp,entrypoint='edge_detect';
+    DATA DETECT_EDGE(DATA s, INTEGER threshold) : cpp,entrypoint='edge_detect';
 END;
 
 /*Service for OpenCVHandlers*/
 SHARED OpenCVService := SERVICE : namespace('OPENCVLib'), plugin('opencv')
-    INTEGER GAUSSBLUR(VARSTRING s,VARSTRING d,INTEGER depth) : cpp,entrypoint='gaussblur';
-    INTEGER GRAYSCALE(VARSTRING s,VARSTRING d) : cpp,entrypoint='grayscale';
-    INTEGER THRESH_HOLD(VARSTRING s,VARSTRING d,REAL threshval,REAL maxval=255,INTEGER type_1=0) : cpp,entrypoint='threshold_img';
-    INTEGER RESIZE(VARSTRING s,VARSTRING d, REAL fx, REAL fy) : cpp,entrypoint='resize';
-    INTEGER TRANSLATE(VARSTRING s,VARSTRING d,REAL x, REAL y) : cpp,entrypoint='translate_img';
-    INTEGER ROTATE(VARSTRING s,VARSTRING d, REAL angle) : cpp,entrypoint='rotate_img';
+    DATA GAUSSBLUR(DATA s,INTEGER depth) : cpp,entrypoint='gaussblur';
+    DATA GRAYSCALE(DATA s) : cpp,entrypoint='grayscale';
+    DATA THRESH_HOLD(DATA s,REAL threshval,REAL maxval=255,INTEGER type_1=0) : cpp,entrypoint='threshold_img';
+    DATA RESIZE(DATA s, REAL fx, REAL fy) : cpp,entrypoint='resize';
+    DATA TRANSLATE(DATA s,REAL x, REAL y) : cpp,entrypoint='translate_img';
+    DATA ROTATE(DATA s, REAL angle) : cpp,entrypoint='rotate_img';
 END;
 
 /*Exported Module*/
 EXPORT opencv := MODULE
 
     /*Get LicensePlate function*/
-    /* Input: Path to Image
+    /* Input: Image Data
        Output: License Plate Characters*/ 
     EXPORT GETLICENSEPLATE(DATA s) := FUNCTION
         result:=LicenseService.GETLICENSEPLATE(s);
         RETURN result;
     END;
 
-    /*Detect Edge function*/
-    /* Input: Path to Image
-       Output: Edge Detection Window*/ 
-    EXPORT DETECT_EDGE(VARSTRING s) := FUNCTION
-        result:=EdgeService.DETECT_EDGE(s);
-        RETURN result;
-    END;
-
     /*Gaussian Blur function*/
-    /* Input: Path to Image, Destination Path, Scale of Gaussian Kernel (odd integer)
-       Output: Saves the blurred image at destination; returns 1 on success, 0 on failure*/
-    EXPORT GAUSSBLUR(VARSTRING s,VARSTRING d, INTEGER depth) := FUNCTION
-        result:=OpenCVService.GAUSSBLUR(s,d,depth);
+    /* Input: Image Data, Destination Path, Scale of Gaussian Kernel (odd integer)
+       Output: Blob Data of Result Image*/
+    EXPORT GAUSSBLUR(DATA s, INTEGER depth) := FUNCTION
+        result:=OpenCVService.GAUSSBLUR(s,depth);
         RETURN result;
     END;
 
     /*Grayscale function*/
-    /* Input: Path to Image, Destination Path
-       Output: Saves the greyscaled image at destination; returns 1 on success, 0 on failure*/
-    EXPORT GRAYSCALE(VARSTRING s,VARSTRING d) := FUNCTION
-        result:=OpenCVService.GRAYSCALE(s,d);
+    /* Input: Image Data, Destination Path
+       Output: Blob Data of Result Image*/
+    EXPORT GRAYSCALE(DATA s) := FUNCTION
+        result:=OpenCVService.GRAYSCALE(s);
         RETURN result;
     END;
 
     /*Thresholding function*/
-    /* Input: Path to Image, Destination Path, Real threshval, Real maxval, Integer type
-       Output: Saves the thresholded image at destination; returns 1 on success, 0 on failure*/
-    EXPORT THRESH_HOLD(VARSTRING s,VARSTRING d,REAL threshval,REAL maxval=255,INTEGER type_1=0) := FUNCTION
-        result:=OpenCVService.THRESH_HOLD(s,d,threshval);
+    /* Input: Image Data, Destination Path, Real threshval, Real maxval, Integer type
+       Output: Blob Data of Result Image*/
+    EXPORT THRESH_HOLD(DATA s,REAL threshval,REAL maxval=255,INTEGER type_1=0) := FUNCTION
+        result:=OpenCVService.THRESH_HOLD(s,threshval);
         RETURN result;
     END;
 
     /*Resizing function*/
-    /* Input: Path to Image, Destination Path, Real x and y resizing coordinates as decimals
-       Output: Saves the resized image at destination; returns 1 on success, 0 on failure*/
-    EXPORT RESIZE(VARSTRING s,VARSTRING d, REAL fx, REAL fy) := FUNCTION
-        result:=OpenCVService.RESIZE(s,d,fx,fy);
+    /* Input: Image Data, Destination Path, Real x and y resizing coordinates as decimals
+       Output: Blob Data of Result Image*/
+    EXPORT RESIZE(DATA s, REAL fx, REAL fy) := FUNCTION
+        result:=OpenCVService.RESIZE(s,fx,fy);
         RETURN result;
     END;
 
     /*Translating an image function*/
-    /* Input: Path to Image, Destination Path, Real x and y shifts
-       Output: Saves the translated image at destination; returns 1 on success, 0 on failure*/
-    EXPORT TRANSLATE(VARSTRING s,VARSTRING d,REAL x, REAL y) := FUNCTION
-        result:=OpenCVService.TRANSLATE(s,d,x,y);
+    /* Input: Image Data, Destination Path, Real x and y shifts
+       Output: Blob Data of Result Image*/
+    EXPORT TRANSLATE(DATA s,REAL x, REAL y) := FUNCTION
+        result:=OpenCVService.TRANSLATE(s,x,y);
         RETURN result;
     END;
 
     /*Rotating an image function*/
-    /* Input: Path to Image, Destination Path, angle of rotation in degrees 
-       Output: Saves the rotated image at destination; returns 1 on success, 0 on failure*/
-    EXPORT ROTATE(VARSTRING s,VARSTRING d, REAL angle) := FUNCTION
-        result:=OpenCVService.ROTATE(s,d,angle);
+    /* Input: Image Data, Destination Path, angle of rotation in degrees 
+       Output: Blob Data of Result Image*/
+    EXPORT ROTATE(DATA s, REAL angle) := FUNCTION
+        result:=OpenCVService.ROTATE(s,angle);
+        RETURN result;
+    END;
+
+    /*Detect Edge function*/
+    /* Input: Image Data, Minimum threshold
+       Output: Blob Data of Result Image*/ 
+    EXPORT DETECT_EDGE(DATA s, INTEGER threshold) := FUNCTION
+        result:=EdgeService.DETECT_EDGE(s, threshold);
         RETURN result;
     END;
 

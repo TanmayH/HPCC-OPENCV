@@ -1,4 +1,0 @@
-if [[ -e /bin/systemctl ]]; then
-    removeSymlink "/etc/systemd/system/hpcc-environment-monitor.service"
-    removeSymlink "/etc/systemd/system/hpcc-environment-monitor.path"
-fi

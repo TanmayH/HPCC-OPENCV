@@ -15,6 +15,7 @@
 #endif
 
 #include "hqlplugins.hpp"
+#include "eclrtl.hpp"
 
 #include <stdio.h>
 #include <iostream>
@@ -45,23 +46,21 @@ extern "C++"
     {   
         OPENCVLIB_API void OPENCVLIB_CALL licenseplate(const char * & __result,const void * s);
 
-        OPENCVLIB_API long long OPENCVLIB_CALL edge_detect(const char * path);
+        OPENCVLIB_API void OPENCVLIB_CALL edge_detect(const char * & __result,const void * s,long long threshold);
         
-        OPENCVLIB_API long long OPENCVLIB_CALL gaussblur(const char * path,const char * dest,long long scale);
+        OPENCVLIB_API void OPENCVLIB_CALL gaussblur(const char * & __result,const void * s,long long scale);
 
-        OPENCVLIB_API long long OPENCVLIB_CALL grayscale(const char * path, const char * dest);
+        OPENCVLIB_API void OPENCVLIB_CALL grayscale(const char * & __result,const void * s);
 
-        OPENCVLIB_API long long OPENCVLIB_CALL resize(const char * path,const char * dest,double fx, double fy);
+        OPENCVLIB_API void OPENCVLIB_CALL resize(const char * & __result,const void * s,double fx, double fy);
 
-        OPENCVLIB_API long long OPENCVLIB_CALL rotate_img(const char * path,const char * dest,double angle);
+        OPENCVLIB_API void OPENCVLIB_CALL rotate_img(const char * & __result,const void * s,double angle);
  
-        OPENCVLIB_API long long OPENCVLIB_CALL threshold_img(const char * path,const char * dest,double threshval,double maxval,long long type);
+        OPENCVLIB_API void OPENCVLIB_CALL threshold_img(const char * & __result,const void * s,double threshval,double maxval,long long type);
 
-        OPENCVLIB_API long long OPENCVLIB_CALL translate_img(const char * path,const char * dest,double x, double y);
-        
-        void drawRedRectangleAroundPlate(cv::Mat &imgOriginalScene, PossiblePlate &licPlate);
-        void writeLicensePlateCharsOnImage(cv::Mat &imgOriginalScene, PossiblePlate &licPlate);
+        OPENCVLIB_API void OPENCVLIB_CALL translate_img(const char * & __result,const void * s,double x, double y);
         static void CannyThreshold(int, void*);
+        void displayResults (cv::Mat src, cv::Mat dest);
     }
 }
 
