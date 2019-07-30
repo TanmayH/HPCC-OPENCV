@@ -12,4 +12,5 @@ OpenCV Plugin for HPCC Platform
     
     Note:  
     1).Make sure permissions for running build.sh and install.sh file are set if necessary  
-    2).To run the various types of functions comment and uncomment the required portions from the test.ecl file
+    2).To run the various types of functions comment and uncomment the required portions from the test.ecl file  
+    3).Changes can be viewed via ECL Watch
